@@ -4,6 +4,7 @@ import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js"; // Assurez-vous que le chemin est correct
+import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin est correct
 
 dotenv.config();
 
@@ -27,6 +28,9 @@ app.use(cors(corsOptions));
 // Utilisation des routes user
 app.use("/user", userRoutes);
 
+// Utilisation des routes user
+app.use("/rank", rankRoutes);
+
 // Lancement du serveur
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));
