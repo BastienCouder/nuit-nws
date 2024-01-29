@@ -11,8 +11,14 @@ export const readUser = async (req, res, next) => {
 };
 
 export const signup = async (req, res, next) => {
-  const { nom, prenom, email, tel } = req.body;
+  const { nom, prenom, email, tel, entreprise, poste } = req.body;
   try {
+    if (!nom || !prenom || !email || !tel || !entreprise || !poste) {
+      return res
+        .status(400)
+        .json({ message: "Tous les champs sont obligatoires." });
+    }
+
     const user = new User({
       nom,
       prenom,
@@ -20,13 +26,13 @@ export const signup = async (req, res, next) => {
       tel,
       entreprise,
       poste,
-      score,
     });
 
     await user.save();
     res.status(201).json({ message: "Utilisateur créé !" });
   } catch (error) {
-    res.status(500).json({ error });
+    console.error("Erreur lors de la création de l'utilisateur :", error);
+    res.status(500).json({ message: "Erreur interne du serveur." });
   }
 };
 

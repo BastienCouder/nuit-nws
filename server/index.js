@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.text({ type: "/" }));
 
 // Définir les options de CORS
-const clientUrl = process.env.CLIENT_URL; // Valeur par défaut si CLIENT_URL n'est pas défini
+const clientUrl = process.env.CLIENT_URL || "http://localhost:3000"; // Valeur par défaut si CLIENT_URL n'est pas défini
 const corsOptions = {
   origin: [clientUrl], // Utilisation de clientUrl
   credentials: true,
@@ -40,5 +40,5 @@ app.use("/answer", answerRoutes);
 app.use("/auth", authRoutes);
 
 // Lancement du serveur
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));
