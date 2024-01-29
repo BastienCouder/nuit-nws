@@ -28,5 +28,5 @@ app.use(cors(corsOptions));
 app.use("/user", userRoutes);
 
 // Lancement du serveur
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));
