@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import http from "http";
+import { connectDB } from "./config/db.js";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js"; // Assurez-vous que le chemin est correct
@@ -8,6 +9,7 @@ import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin 
 import answerRoutes from "./routes/answer.routes.js"; // Assurez-vous que le chemin est correct
 import authRoutes from "./routes/auth.routes.js"; // Assurez-vous que le chemin est correct
 
+connectDB();
 dotenv.config();
 
 const app = express();
