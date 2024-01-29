@@ -4,17 +4,9 @@ import mongoose from "mongoose";
 const answerSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   contenu: { type: String, required: true },
-  categorie: {
-    type: String,
-    required: true,
-    enum: ["travail", "loisirs", "personnel", "alimentaire", ""],
-  },
+  categorie: {type: String,required: true, enum: ["travail", "loisirs", "personnel", "alimentaire", ""],},
   dateCreation: { type: Date, default: Date.now },
-  idCreateur: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+  idCreateur: {type: mongoose.Schema.Types.ObjectId,ref: "User",required: true,},
 });
 
 // Création du modèle

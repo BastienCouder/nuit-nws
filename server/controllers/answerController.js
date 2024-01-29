@@ -13,6 +13,6 @@ export const answerRank = async (req, res, next) => {
   }
 };
 
-const RankController = {readrank,answerRank,};
+const answerController = {answerRank};
 
-export { RankController };
+export { answerController };
