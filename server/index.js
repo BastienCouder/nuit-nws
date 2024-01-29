@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js"; // Assurez-vous que le chemin est correct
 import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin est correct
 import answerRoutes from "./routes/answer.routes.js"; // Assurez-vous que le chemin est correct
+import authRoutes from "./routes/auth.routes.js"; // Assurez-vous que le chemin est correct
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use("/rank", rankRoutes);
 
 // Utilisation des routes answer
 app.use("/answer", answerRoutes);
+
+// Utilisation des routes auth
+app.use("/auth", authRoutes);
 
 // Lancement du serveur
 const PORT = process.env.PORT || 5001;
