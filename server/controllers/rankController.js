@@ -13,8 +13,6 @@ export const readrank = async (req, res, next) => {
     });
   }
 };
-const RankController = {
-  readrank,
-};
+const RankController = {readrank,};
 
 export { RankController };
