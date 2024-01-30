@@ -1,6 +1,7 @@
 import Response from "../schemas/response.js";
 import Question from "../schemas/question.js";
 import User from "../schemas/user.js";
+import { updateRankings } from "../controllers/rankController.js";
 
 export const createResponse = async (req, res) => {
   const { idQuestion, idUtilisateur, contenu } = req.body;
@@ -22,9 +23,9 @@ export const createResponse = async (req, res) => {
 
     await response.save();
 
-    // Si la réponse est correcte, mettre à jour le score de l'utilisateur
     if (isCorrect) {
       await User.findByIdAndUpdate(idUtilisateur, { $inc: { score: 1 } });
+      updateRankings();
     }
 
     res

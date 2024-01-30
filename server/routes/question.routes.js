@@ -8,6 +8,7 @@ router.get(
   "/random/:categorie",
   questionController.readRandomQuestionByCategory
 );
+router.get("/:id", questionController.readQuestionById);
 
 // Créer une question
 router.post("/", questionController.createQuestion);

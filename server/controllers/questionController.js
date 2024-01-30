@@ -52,6 +52,26 @@ export const readRandomQuestionByCategory = async (req, res) => {
   }
 };
 
+// Get by ID
+export const readQuestionById = async (req, res) => {
+  const questionId = req.params.id;
+
+  try {
+    const question = await Question.findOne({ _id: questionId });
+
+    if (!question) {
+      return res.status(404).json({ message: "Question non trouvée." });
+    }
+
+    res.status(200).json({ message: "Question trouvé avec succès.", question });
+  } catch (error) {
+    console.error("Erreur :", error);
+    res.status(500).json({
+      error: "Erreur lors de la mise à jour de la question.",
+    });
+  }
+};
+
 // Update
 export const updateQuestion = async (req, res) => {
   const questionId = req.params.id;
@@ -100,6 +120,7 @@ export const deleteQuestion = async (req, res) => {
 const questionController = {
   createQuestion,
   readRandomQuestionByCategory,
+  readQuestionById,
   updateQuestion,
   deleteQuestion,
 };

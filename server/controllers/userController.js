@@ -1,4 +1,5 @@
 import User from "../schemas/user.js";
+
 // Read
 export const readUser = async (req, res, next) => {
   try {
@@ -33,11 +34,9 @@ export const signup = async (req, res, next) => {
     res.status(201).json({ message: "Utilisateur créé !" });
   } catch (error) {
     if (error.name === "ValidationError") {
-      // Retourne les détails de la validation de Mongoose
       const messages = Object.values(error.errors).map((val) => val.message);
       return res.status(400).json({ error: messages.join(". ") });
     }
-    // Pour les autres erreurs non anticipées
     res.status(500).json({ error: "Erreur interne du serveur" });
   }
 };
