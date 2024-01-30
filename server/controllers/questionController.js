@@ -31,7 +31,7 @@ export const readRandomQuestionByCategory = async (req, res) => {
   const { categorie } = req.params;
 
   try {
-    const questions = await Answer.find({ categorie });
+    const questions = await Question.find({ categorie });
 
     if (!questions.length) {
       return res
@@ -57,7 +57,7 @@ export const updateQuestion = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const question = await Answer.findByIdAndUpdate(questionId, updateData, {
+    const question = await Question.findByIdAndUpdate(questionId, updateData, {
       new: true,
     });
 
@@ -81,7 +81,7 @@ export const deleteQuestion = async (req, res) => {
   const questionId = req.params.id;
 
   try {
-    const question = await Answer.findByIdAndRemove(questionId);
+    const question = await Question.findByIdAndRemove(questionId);
 
     if (!question) {
       return res.status(404).json({ message: "Question non trouvée." });
