@@ -13,10 +13,11 @@ export const readUser = async (req, res, next) => {
 export const signup = async (req, res, next) => {
   const { nom, prenom, email, tel, entreprise, poste } = req.body;
   try {
-    if (!nom || !prenom || !email || !tel || !entreprise || !poste) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res
-        .status(400)
-        .json({ message: "Tous les champs sont obligatoires." });
+        .status(409)
+        .json({ error: "Un utilisateur avec cet email existe déjà." });
     }
 
     const user = new User({
@@ -31,8 +32,13 @@ export const signup = async (req, res, next) => {
     await user.save();
     res.status(201).json({ message: "Utilisateur créé !" });
   } catch (error) {
-    console.error("Erreur lors de la création de l'utilisateur :", error);
-    res.status(500).json({ message: "Erreur interne du serveur." });
+    if (error.name === "ValidationError") {
+      // Retourne les détails de la validation de Mongoose
+      const messages = Object.values(error.errors).map((val) => val.message);
+      return res.status(400).json({ error: messages.join(". ") });
+    }
+    // Pour les autres erreurs non anticipées
+    res.status(500).json({ error: "Erreur interne du serveur" });
   }
 };
 

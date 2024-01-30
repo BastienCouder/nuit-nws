@@ -6,7 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js"; // Assurez-vous que le chemin est correct
 import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin est correct
-import answerRoutes from "./routes/answer.routes.js"; // Assurez-vous que le chemin est correct
+import questionRoutes from "./routes/question.routes.js"; // Assurez-vous que le chemin est correct
 import authRoutes from "./routes/auth.routes.js"; // Assurez-vous que le chemin est correct
 
 connectDB();
@@ -36,7 +36,7 @@ app.use("/user", userRoutes);
 app.use("/rank", rankRoutes);
 
 // Utilisation des routes answer
-app.use("/answer", answerRoutes);
+app.use("/question", questionRoutes);
 
 // Utilisation des routes auth
 app.use("/auth", authRoutes);
