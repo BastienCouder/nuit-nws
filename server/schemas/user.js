@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 //Création du schéma
 const userSchema = new mongoose.Schema({
-  id: mongoose.Schema.Types.ObjectId,
   nom: { type: String, required: true },
   prenom: { type: String, required: true },
   email: { type: String, required: true, unique: true },

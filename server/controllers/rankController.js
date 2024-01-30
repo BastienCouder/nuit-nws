@@ -1,5 +1,3 @@
-import fs from "fs/promises";
-
 // Read
 export const readrank = async (req, res, next) => {
   try {
@@ -13,6 +11,6 @@ export const readrank = async (req, res, next) => {
     });
   }
 };
-const RankController = {readrank,};
+const RankController = { readrank };
 
 export { RankController };

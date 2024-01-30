@@ -2,12 +2,13 @@ import Question from "../schemas/question.js";
 
 // / Create
 export const createQuestion = async (req, res, next) => {
-  const { contenu, categorie, idCreateur } = req.body;
+  const { contenu, categorie, idCreateur, reponseCorrecte } = req.body;
 
   try {
     const question = new Question({
       contenu,
       categorie,
+      reponseCorrecte,
       idCreateur,
     });
 

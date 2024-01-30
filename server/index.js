@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js"; // Assurez-vous que le chemin est correct
 import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin est correct
 import questionRoutes from "./routes/question.routes.js"; // Assurez-vous que le chemin est correct
+import responseRoutes from "./routes/response.routes.js"; // Assurez-vous que le chemin est correct
 import authRoutes from "./routes/auth.routes.js"; // Assurez-vous que le chemin est correct
 
 connectDB();
@@ -37,6 +38,9 @@ app.use("/rank", rankRoutes);
 
 // Utilisation des routes answer
 app.use("/question", questionRoutes);
+
+// Utilisation des routes answer
+app.use("/response", responseRoutes);
 
 // Utilisation des routes auth
 app.use("/auth", authRoutes);
