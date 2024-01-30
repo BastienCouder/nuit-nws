@@ -1,11 +1,9 @@
 import express from "express";
-import AuthController from "../controllers/authController.js";
+import { authController } from "../controllers/authController.js";
 
 const router = express.Router();
 
 // Routes d'authentification
-router.get("/qr", AuthController.generateQRCode);
-router.get("/poll/:sessionId", AuthController.pollSession);
-router.post("/validate", AuthController.validateQRCode);
+router.post("/login/qr", authController.loginWithQR);
 
 export default router;

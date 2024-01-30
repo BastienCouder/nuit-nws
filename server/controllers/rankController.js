@@ -1,7 +1,5 @@
-import mongoose from "mongoose";
 import Rank from "../schemas/rank.js"; // Modèle de classement
 import User from "../schemas/user.js"; // Modèle utilisateur
-import Question from "../schemas/question.js"; // Modèle de question (si nécessaire)
 
 // Créer un classement pour un nouvel utilisateur ou activité
 export const createRank = async (req, res, next) => {

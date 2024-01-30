@@ -5,8 +5,7 @@ const router = express.Router();
 
 // user routes
 router.get("/", UserController.readUser);
-router.post("/login", UserController.login);
-router.post("/signup", UserController.signup);
+router.post("/", UserController.createUser);
 
 // Exportez le routeur en utilisant la syntaxe ES6
 export default router;

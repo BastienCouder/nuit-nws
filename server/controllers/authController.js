@@ -1,83 +1,70 @@
-import QRCode from "qrcode";
-import jwt from "jsonwebtoken";
+import User from "../schemas/user.js";
 import Session from "../schemas/sessionModel.js";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
-const AuthController = {
-  generateQRCode: async (req, res) => {
-    const sessionId = generateSessionId();
-    const token = jwt.sign({ sessionId }, "your_secret_key");
+export const loginWithQR = async (req, res) => {
+  const { qrToken } = req.body;
 
-    try {
-      // Créer une nouvelle session dans la base de données
-      await new Session({ sessionId }).save();
+  try {
+    const decoded = jwt.verify(qrToken, "your_secret_key");
 
-      QRCode.toDataURL(token, (err, url) => {
-        if (err) {
-          return res
-            .status(500)
-            .json({ error: "Erreur lors de la génération du QR code" });
-        }
-        res.json({ qrCodeUrl: url, sessionId });
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
-  },
 
-  pollSession: async (req, res) => {
-    const { sessionId } = req.params;
-
-    try {
-      const session = await Session.findOne({ sessionId });
-
-      if (!session) {
-        return res.status(404).json({ error: "Session non trouvée" });
-      }
-
-      if (session.status === "authenticated") {
-        // Générer un jeton d'authentification pour l'utilisateur
-        const authToken = jwt.sign(
-          { userId: session.userId },
-          "your_secret_key",
-          { expiresIn: "1h" }
-        ); // Expire après 1 heure
-        res.json({ status: session.status, authToken });
-      } else {
-        res.json({ status: session.status });
-      }
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    const sessionToken = await generateSessionToken(user);
+    res
+      .status(200)
+      .json({ message: "Authentification réussie", token: sessionToken });
+  } catch (error) {
+    if (error.message === "Une session existe déjà pour cet utilisateur.") {
+      return res.status(409).json({ message: error.message }); // 409 Conflict
     }
-  },
-
-  validateQRCode: async (req, res) => {
-    const { token } = req.body;
-
-    try {
-      const decoded = jwt.verify(token, "your_secret_key");
-      const session = await Session.findOne({ sessionId: decoded.sessionId });
-
-      if (!session) {
-        return res.status(404).json({ error: "Session non trouvée" });
-      }
-
-      // Supposons que le jeton contient userId
-      session.userId = decoded.userId;
-      session.status = "authenticated";
-      await session.save();
-
-      res.json({ message: "QR code validé avec succès" });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
+    console.error("Erreur lors de l'authentification par QR code :", error);
+    res.status(500).json({ error: "Erreur lors de l'authentification." });
+  }
 };
 
-// ...
+const authController = {
+  loginWithQR,
+};
 
-// Génère un identifiant de session unique
-function generateSessionId() {
-  return Math.random().toString(36).substring(2, 15);
-}
+export { authController };
 
-export default AuthController;
+const generateSessionToken = async (user) => {
+  try {
+    // Trouver une session existante pour cet utilisateur ou en créer une nouvelle
+    let session = await Session.findOne({
+      userEmail: user.email,
+      status: "active",
+    });
+    if (session) {
+      // Si une session active existe, réinitialiser sa durée de vie (optionnel)
+      session.createdAt = new Date();
+      console.log("active");
+      await session.save();
+    } else {
+      // Sinon, créer une nouvelle session
+      const sessionId = new mongoose.Types.ObjectId();
+      session = await new Session({
+        sessionId,
+        userId: user.email,
+        status: "active", // ou "pending" selon votre logique de flux
+      }).save();
+
+      // Ajouter la session au tableau de sessions de l'utilisateur
+      user.sessions.push(session._id);
+      await user.save(); // Sauvegarder les modifications de l'utilisateur
+    }
+
+    // Générer et retourner un jeton de session
+    return jwt.sign({ sessionId: session.sessionId }, "another_secret_key", {
+      expiresIn: "15m",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la génération du jeton de session :", error);
+    throw error;
+  }
+};
