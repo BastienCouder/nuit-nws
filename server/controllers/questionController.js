@@ -34,36 +34,11 @@ export const createQuestion = async (req, res, next) => {
 
 export const getQuestionsByUser = async (user) => {
   try {
-    const question = await Question.findOne({ idCreateur: user._id });
-    return question;
+    const questions = await Question.find({ idCreateur: user._id });
+    return questions;
   } catch (error) {
     console.error("Erreur lors de la récupération des questions :", error);
     throw error;
-  }
-};
-
-// Read a Random Question from a Specific Category
-export const readRandomQuestionByCategory = async (req, res) => {
-  const { categorie } = req.params;
-
-  try {
-    const questions = await Question.find({ categorie });
-
-    if (!questions.length) {
-      return res
-        .status(404)
-        .json({ message: "Aucune question trouvée pour cette catégorie." });
-    }
-
-    const randomIndex = Math.floor(Math.random() * questions.length);
-    const randomQuestion = questions[randomIndex];
-
-    res.status(200).json(randomQuestion);
-  } catch (error) {
-    console.error("Erreur :", error);
-    res.status(500).json({
-      error: "Erreur lors de la récupération de la question.",
-    });
   }
 };
 
@@ -72,9 +47,9 @@ export const readQuestionById = async (req, res) => {
   const questionId = req.params.id;
 
   try {
-    const question = await Question.findOne({ _id: questionId });
+    const questions = await Question.find({ _id: questionId });
 
-    if (!question) {
+    if (!questions) {
       return res.status(404).json({ message: "Question non trouvée." });
     }
 
@@ -134,7 +109,6 @@ export const deleteQuestion = async (req, res) => {
 
 const questionController = {
   createQuestion,
-  readRandomQuestionByCategory,
   readQuestionById,
   updateQuestion,
   deleteQuestion,

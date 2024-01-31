@@ -4,10 +4,6 @@ const router = express.Router();
 
 // question routes
 // Lire une question aléatoire par catégorie
-router.get(
-  "/random/:categorie",
-  questionController.readRandomQuestionByCategory
-);
 router.get("/:id", questionController.readQuestionById);
 
 // Créer une question
