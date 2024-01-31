@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
   role: { type: String, required: false, default: "user" },
   score: { type: Number, default: 0 },
   dateInscription: { type: Date, default: Date.now },
+  qrCodeUrl: {
+    type: String,
+    required: true,
+  },
   qrToken: { type: String, required: true },
   sessions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Session" }],
   lastLoginAt: { type: Date },
