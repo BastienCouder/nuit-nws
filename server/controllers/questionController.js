@@ -1,15 +1,18 @@
 import Question from "../schemas/question.js";
-import jwt from "jsonwebtoken";
-import User from "../schemas/user.js";
 
 // / Create
 export const createQuestion = async (req, res, next) => {
-  const { contenu, categorie, idCreateur, reponseCorrecte } = req.body;
+  const { idCreateur, reponseCorrecte } = req.body;
+
+  // Assurez-vous que reponseCorrecte est un tableau
+  if (!Array.isArray(reponseCorrecte)) {
+    return res.status(400).json({
+      error: "Le champ reponseCorrecte doit être un tableau.",
+    });
+  }
 
   try {
     const question = new Question({
-      contenu,
-      categorie,
       reponseCorrecte,
       idCreateur,
     });
@@ -22,28 +25,20 @@ export const createQuestion = async (req, res, next) => {
       question: savedQuestion,
     });
   } catch (error) {
-    console.error("Erreur :", error);
+    console.error("Erreur lors de la création de la question :", error);
     res.status(500).json({
       error: "Erreur lors de la création de la question.",
     });
   }
 };
-export const getQuestionsByUser = async (user, res) => {
-  try {
-    // Rechercher toutes les questions où idCreateur correspond à l'_id de l'utilisateur
-    const questions = await Question.findOne({ idCreateur: user._id });
 
-    // Répondre avec les questions trouvées
-    res.status(200).json({
-      success: true,
-      message: "Questions récupérées avec succès.",
-      questions,
-    });
+export const getQuestionsByUser = async (user) => {
+  try {
+    const question = await Question.findOne({ idCreateur: user._id });
+    return question;
   } catch (error) {
     console.error("Erreur lors de la récupération des questions :", error);
-    res.status(500).json({
-      error: "Erreur lors de la récupération des questions.",
-    });
+    throw error;
   }
 };
 

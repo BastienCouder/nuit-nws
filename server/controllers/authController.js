@@ -8,14 +8,14 @@ export const loginWithQR = async (req, res) => {
   const { qrToken } = req.body;
 
   try {
-    const decoded = jwt.verify(qrToken, process.env.JWT_SECRET_KEY); // Assurez-vous que 'your_secret_key' est bien protégée et idéalement stockée dans une variable d'environnement
+    const decoded = jwt.verify(qrToken, process.env.JWT_SECRET_KEY);
 
     const user = await User.findOne({ email: decoded.email });
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
-    const sessionToken = await generateSessionToken(user, res);
+    const sessionToken = await generateSessionToken(user);
     res
       .status(200)
       .json({ message: "Authentification réussie", token: sessionToken });
@@ -24,7 +24,7 @@ export const loginWithQR = async (req, res) => {
     res.status(500).json({ error: "Erreur lors de l'authentification." });
   }
 };
-const generateSessionToken = async (user, res) => {
+const generateSessionToken = async (user) => {
   try {
     // Vérifier si une session active existe déjà pour cet utilisateur
     const activeSession = await Session.findOne({
@@ -34,7 +34,7 @@ const generateSessionToken = async (user, res) => {
 
     if (activeSession) {
       // Si une session active existe déjà, indiquer à l'application client de rediriger l'utilisateur vers la page de réponse à la question
-      return getQuestionsByUser(user, res);
+      return getQuestionsByUser(user);
     }
 
     // Créer une nouvelle session

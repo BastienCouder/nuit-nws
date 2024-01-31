@@ -9,6 +9,7 @@ import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin 
 import questionRoutes from "./routes/question.routes.js"; // Assurez-vous que le chemin est correct
 import responseRoutes from "./routes/response.routes.js"; // Assurez-vous que le chemin est correct
 import authRoutes from "./routes/auth.routes.js"; // Assurez-vous que le chemin est correct
+import qualityRoutes from "./routes/quality.routes.js"; // Assurez-vous que le chemin est correct
 
 connectDB();
 dotenv.config();
@@ -45,6 +46,8 @@ app.use("/response", responseRoutes);
 // Utilisation des routes auth
 app.use("/auth", authRoutes);
 
+// Utilisation des routes auth
+app.use("/quality", qualityRoutes);
 // Lancement du serveur
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));

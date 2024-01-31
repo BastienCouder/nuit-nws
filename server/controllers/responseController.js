@@ -7,12 +7,21 @@ export const createResponse = async (req, res) => {
   const { idQuestion, idUtilisateur, contenu } = req.body;
 
   try {
-    const question = await Question.findById(idQuestion);
+    const question = await Question.findById(idQuestion).populate(
+      "reponseCorrecte"
+    );
     if (!question) {
       return res.status(404).json({ message: "Question non trouvée." });
     }
 
-    const isCorrect = question.reponseCorrecte === contenu;
+    // Vérifier quelles réponses sont correctes
+    const correctResponses = question.reponseCorrecte.map((quality) =>
+      quality._id.toString()
+    );
+    const correctCount = contenu.filter((id) =>
+      correctResponses.includes(id)
+    ).length;
+    const isCorrect = correctCount === correctResponses.length;
 
     const response = new Response({
       idQuestion,
@@ -23,14 +32,20 @@ export const createResponse = async (req, res) => {
 
     await response.save();
 
-    if (isCorrect) {
-      await User.findByIdAndUpdate(idUtilisateur, { $inc: { score: 1 } });
+    if (correctCount > 0) {
+      // Mettre à jour le score basé sur le nombre de réponses correctes
+      await User.findByIdAndUpdate(idUtilisateur, {
+        $inc: { score: correctCount },
+      });
       updateRankings();
     }
 
-    res
-      .status(201)
-      .json({ message: "Réponse créée avec succès.", response, isCorrect });
+    res.status(201).json({
+      message: "Réponse créée avec succès.",
+      response,
+      isCorrect,
+      correctCount,
+    });
   } catch (error) {
     console.error("Erreur lors de la création de la réponse :", error);
     res

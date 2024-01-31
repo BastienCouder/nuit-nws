@@ -12,9 +12,10 @@ const responseSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  contenu: { type: String, required: true },
+  contenu: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Quality", required: true },
+  ],
   dateReponse: { type: Date, default: Date.now },
-  isCorrect: { type: Boolean, default: false },
 });
 
 // Création du modèle
