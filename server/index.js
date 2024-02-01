@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import http from "http";
 import { connectDB } from "./config/db.js";
-import cors from "cors";
+// import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js"; // Assurez-vous que le chemin est correct
 import rankRoutes from "./routes/rank.routes.js"; // Assurez-vous que le chemin est correct
@@ -22,14 +22,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.text({ type: "/" }));
 
-// Définir les options de CORS
-const clientUrl = process.env.CLIENT_URL || "http://localhost:3000"; // Valeur par défaut si CLIENT_URL n'est pas défini
-const corsOptions = {
-  origin: [clientUrl], // Utilisation de clientUrl
-  credentials: true,
-};
+// // Définir les options de CORS
+// const clientUrl = process.env.CLIENT_URL || "http://localhost:3000"; // Valeur par défaut si CLIENT_URL n'est pas défini
+// const corsOptions = {
+//   origin: [clientUrl], // Utilisation de clientUrl
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 // Utilisation des routes user
 app.use("/user", userRoutes);
@@ -50,4 +50,4 @@ app.use("/auth", authRoutes);
 app.use("/quality", qualityRoutes);
 // Lancement du serveur
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));
+server.listen(PORT,'0.0.0.0', () => console.log(`Le serveur a démarré au port ${PORT}`));
