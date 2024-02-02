@@ -31,7 +31,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onDone, onStopScan }) => 
     async ({ type, data }: BarCodeEvent) => {
         if (isAuthenticated) return; 
       try {
-        const response = await fetch("http://192.168.1.53:5000/auth/login/qr", {
+        const response = await fetch("http://172.16.27.146:5000/auth/login/qr", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

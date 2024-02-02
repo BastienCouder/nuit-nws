@@ -13,9 +13,10 @@ export default {
     text: '#f1f1f1',
     background: '#04061F',
     primary:'#FCB900',
-    secondary:'#0047AB',
+    secondary:'#FCB900',
     tint: tintColorDark,
     tabIconDefault: '#0047AB',
+    tabBarStyle : '#FCB900',
     tabIconSelected: tintColorDark,
   },
 };
