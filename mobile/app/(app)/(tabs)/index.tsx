@@ -1,7 +1,7 @@
 import { ActivityIndicator, Button, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useAuth } from '@/context/auth';
-import { useUserDetails } from '@/app/hook/useUserData';
+import { useUserDetails } from '@/hook/useUserData';
 
 export default function TabOneScreen() {
   const { signOut } = useAuth()
