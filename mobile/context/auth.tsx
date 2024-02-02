@@ -35,6 +35,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     loadUserData();
   }, []);
 
+
   const signInWithToken = async (token: string, userDetails: any) => {
     await AsyncStorage.setItem('userToken', JSON.stringify(token));
     await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
@@ -42,20 +43,23 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     router.replace("/"); // Redirection vers l'écran principal ou autre selon votre flux d'application
   };
 
+  const signOut = async () => {
+    try {
+      setUser("")
+      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('userDetails');
+      router.replace("/(auth)/login");
+    } catch (error) {
+      console.log('Error signing out: ', error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user: user,
-        signIn: () => {
-          setUser("bastien");
-        },
         signInWithToken,
-        signOut: () => {
-          setUser("");
-          AsyncStorage.removeItem('userToken');
-          AsyncStorage.removeItem('userDetails');
-          router.replace("/(auth)/login");
-        },
+        signOut,
       }}
     >
       {children}

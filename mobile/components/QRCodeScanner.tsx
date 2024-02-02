@@ -31,7 +31,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onDone, onStopScan }) => 
     async ({ type, data }: BarCodeEvent) => {
         if (isAuthenticated) return; 
       try {
-        const response = await fetch("http://192.168.1.53:5000/auth/login/qr", {
+        const response = await fetch("http://172.16.27.141:5000/auth/login/qr", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -69,8 +69,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onDone, onStopScan }) => 
     <View style={styles.container}>
       <CameraView style={styles.camera} type={facing} onBarcodeScanned={handleBarCodeScanned} />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          {/* Optional: Add UI elements for the button if needed */}
+        <TouchableOpacity>
         </TouchableOpacity>
       </View>
       <Button title="Stop Scanning" onPress={onStopScan} />
@@ -79,9 +78,6 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onDone, onStopScan }) => 
 };
 
 const styles = StyleSheet.create({
-  button: {
-    // Define your button styles here
-  },
   title: {
     fontSize: 20,
     fontWeight: "bold",

@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
 import { Button, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { useAuth } from '@/context/auth';
-import QRCodeScanner from '@/components/QRCodeScanner'; // Assurez-vous que le chemin est correct
+import QRCodeScanner from '@/components/QRCodeScanner';
 
 export default function LoginScreen() {
-  const { signIn } = useAuth();
   const [isScanning, setIsScanning] = useState(false);
 
   const handleStopScan = () => {
     setIsScanning(false); 
   };
 
-
   const handleQRCodeScan = () => {
     setIsScanning(true);
-  };
-
-  const handleSignIn = () => {
-    // Logique pour se connecter sans QR code
-    signIn();
   };
 
   return (
@@ -33,10 +25,8 @@ export default function LoginScreen() {
       {
         isScanning ? (
           <QRCodeScanner onDone={() => setIsScanning(false)}  onStopScan={handleStopScan}/>
-          
         ) : (
           <>
-            <Button title="Sign in" onPress={handleSignIn}></Button>
             <Button title="Scan QR Code" onPress={handleQRCodeScan}></Button>
           </>
         )
