@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-  },
+    fontFamily:'FugazOne'
+    },
   separator: {
     marginVertical: 30,
     height: 1,
