@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import QRCode from "qrcode";
 import prisma from "../config/prisma"
 import fs from "fs";
+import path from 'path';
 import { toFileStream } from "qrcode";
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
@@ -38,8 +39,12 @@ export const createUser = async (req: Request, res: Response) => {
     const qrCodeUrl: string = await QRCode.toDataURL(qrToken);
 
     // Définir un chemin et nom de fichier pour le QR code
-    const qrImagePath: string = `./uploads/qr_images/${prenom}_${nom}_qrcode.png`;
+    const qrImagesDir = path.join(__dirname, '..', 'uploads', 'qr_images');
+    if (!fs.existsSync(qrImagesDir)) {
+      fs.mkdirSync(qrImagesDir, { recursive: true });
+    }
 
+    const qrImagePath = path.join(qrImagesDir, `${prenom}_${nom}_qrcode.png`);
     const saveQRCode: Promise<unknown> = new Promise((resolve, reject) => {
       const stream = fs.createWriteStream(qrImagePath);
       toFileStream(stream, qrToken, (error) => {
@@ -65,6 +70,9 @@ export const createUser = async (req: Request, res: Response) => {
 
     await saveQRCode;
 
+const maxLength = 45; // Ajustez ceci en fonction de la longueur maximale de votre colonne
+const truncatedQrCodeUrl = qrCodeUrl.length > maxLength ? qrCodeUrl.substring(0, maxLength) : qrCodeUrl;
+
     // Créer un nouvel utilisateur avec le QR code URL et le chemin de fichier
     const user: User = await prisma.user.create({
       data: {
@@ -74,7 +82,7 @@ export const createUser = async (req: Request, res: Response) => {
         tel,
         entreprise,
         poste,
-        qrCodeUrl,
+        qrCodeUrl:truncatedQrCodeUrl,
         qrToken,
         lastLoginAt: new Date(),
       },

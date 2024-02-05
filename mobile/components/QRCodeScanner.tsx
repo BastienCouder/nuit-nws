@@ -81,7 +81,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
       </View>
     );
   }
-
+  
   const styles = StyleSheet.create({
     title: {
       fontSize: 20,

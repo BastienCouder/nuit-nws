@@ -5,7 +5,7 @@ type ColorSchemeType = {
   text: string;
   background: string;
   primary: string;
-  secondary?: string;
+  secondary: string;
   tint: string;
   tabIconDefault: string;
   tabIconSelected: string;

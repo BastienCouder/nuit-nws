@@ -21,16 +21,25 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1 }}>
       {/* Carré et texte en haut de la page */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#04061F' }}>
-
+      <View style={{ 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        position: 'absolute',
+        top:0,
+        left: 0,
+        right: 0,
+        paddingTop: 40,
+        zIndex:9999
+      }}>
         {/* Ajoutez l'Image */}
         <Image
           source={require('@/assets/images/Logo.png')}
-          style={{ width: 100, height: 100, marginLeft: 10 }}
+          style={{ width: 100, height: 100, marginLeft: 10}}
         />
 
         {/* Texte "La nuit de la NWS" avec la couleur du background */}
-        <Text style={{ color: themeColors.primary, fontSize: 24, fontWeight: 'bold', marginLeft: 10, fontFamily: 'FugazOne' }}>
+        <Text style={{ color: themeColors.primary, fontSize: 24, marginLeft: 10, fontFamily: 'FugazOne' }}>
           La nuit de la NWS
         </Text>
       </View>

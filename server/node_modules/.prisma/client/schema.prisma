@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,21 +9,22 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
+  id              Int                    @id @default(autoincrement())
   nom             String
   prenom          String
-  email           String    @unique
+  email           String                 @unique
   tel             String
   entreprise      String
-  poste           String 
-  role            String    @default("user")
-  score           Int       @default(0)
-  dateInscription DateTime  @default(now())
+  poste           String
+  role            String                 @default("user")
+  score           Int                    @default(0)
+  dateInscription DateTime               @default(now())
   qrCodeUrl       String
   qrToken         String
   sessions        Session[]
   ranks           Rank[]
   lastLoginAt     DateTime
+  selections      SelectionUtilisateur[]
 }
 
 model Session {
@@ -38,8 +36,9 @@ model Session {
 }
 
 model CommonPoint {
-  id      Int    @id @default(autoincrement())
-  contenu String @unique
+  id                   Int                    @id @default(autoincrement())
+  contenu              String                 @unique
+  selectionUtilisateur SelectionUtilisateur[]
 }
 
 model Rank {
@@ -48,4 +47,14 @@ model Rank {
   score         Int
   position      Int
   user          User @relation(fields: [idUtilisateur], references: [id])
+}
+
+model SelectionUtilisateur {
+  id            Int         @id @default(autoincrement())
+  utilisateurId Int
+  pointCommunId Int
+  utilisateur   User        @relation(fields: [utilisateurId], references: [id])
+  pointCommun   CommonPoint @relation(fields: [pointCommunId], references: [id])
+
+ // Un utilisateur ne peut pas sélectionner le même point commun plusieurs fois
 }

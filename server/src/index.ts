@@ -6,9 +6,9 @@ import express, { Express, Request, Response } from "express";
 // Import routes
 import userRoutes from "./routes/user.routes";
 import rankRoutes from "./routes/rank.routes";
-import questionRoutes from "./routes/question.routes";
-import responseRoutes from "./routes/response.routes";
 import authRoutes from "./routes/auth.routes";
+import selectUserRoutes from "./routes/selectUser.routes";
+
 import commonPointRoutes from "./routes/commonPoint.routes";
 import  swaggerUi  from "swagger-ui-express";
 import  swaggerDocument  from "./config/swagger";
@@ -37,9 +37,8 @@ app.get("/", (req: Request, res: Response) => {
 // Utilisation des routes
 app.use("/user", userRoutes);
 app.use("/rank", rankRoutes);
-app.use("/question", questionRoutes);
-app.use("/response", responseRoutes);
 app.use("/auth", authRoutes);
+app.use("/selectUser", selectUserRoutes);
 app.use("/commonPoint", commonPointRoutes);
 
 // Route pour la documentation Swagger

@@ -131,7 +131,7 @@ export default function TabOneScreen() {
           </Text>
         </View>
       </View>
-      <Pressable
+      {/* <Pressable
         onPress={signOut}
         style={({ pressed }) => [
           { padding: 5, borderColor: themeColors.primary, borderWidth: 2 ,marginTop:20},
@@ -150,7 +150,7 @@ export default function TabOneScreen() {
         >
           déconnexion
         </Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }
