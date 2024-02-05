@@ -1,7 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, View, Text } from 'react-native';
+import { Pressable, View, Text, Image } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -21,10 +21,14 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1 }}>
       {/* Carré et texte en haut de la page */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 50, backgroundColor: '#04061F' }}>
-        {/* Carré à gauche du texte */}
-        <View style={{ width: 50, height: 50, backgroundColor: themeColors.primary }} />
-        
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#04061F' }}>
+
+        {/* Ajoutez l'Image */}
+        <Image
+          source={require('@/assets/images/Logo.png')}
+          style={{ width: 100, height: 100, marginLeft: 10 }}
+        />
+
         {/* Texte "La nuit de la NWS" avec la couleur du background */}
         <Text style={{ color: themeColors.primary, fontSize: 24, fontWeight: 'bold', marginLeft: 10, fontFamily: 'FugazOne' }}>
           La nuit de la NWS
