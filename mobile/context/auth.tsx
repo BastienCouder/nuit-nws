@@ -58,6 +58,9 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     <AuthContext.Provider
       value={{
         user: user,
+        signIn: () => {
+          setUser("bastien");
+        },
         signInWithToken,
         signOut,
       }}

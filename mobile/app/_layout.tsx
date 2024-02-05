@@ -5,10 +5,9 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot, Stack } from "expo-router";
+import { Slot} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-
 import { useColorScheme } from "@/components/useColorScheme";
 import { AuthProvider } from "@/context/auth";
 
@@ -29,9 +28,11 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({
     FugazOne: require("../assets/fonts/FugazOne-Regular.ttf"),
     FiraSans: require("../assets/fonts/FiraSans-Regular.ttf"),
+    FiraSansBold: require("../assets/fonts/FiraSans-Bold.ttf"),
     ...FontAwesome.font,
   });
 
+  
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -49,6 +50,8 @@ export default function RootLayout() {
 
   return <RootLayoutNav />;
 }
+
+
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();

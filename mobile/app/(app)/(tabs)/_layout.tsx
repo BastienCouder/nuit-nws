@@ -7,27 +7,33 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3, color: props.color }} {...props} />;
-}
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
+  function TabBarIcon(props: {
+    name: React.ComponentProps<typeof FontAwesome>['name'];
+    color: string;
+  }) {
+    return <FontAwesome size={28} style={{ marginBottom: -2, color: "#04061F" }} {...props} />;
+  }
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: useClientOnlyValue(false, false),
-        tabBarStyle: { backgroundColor: Colors[colorScheme ?? 'light'].text }, // Set the background color here
+    screenOptions={{
+      tabBarActiveTintColor: themeColors.background,
+      headerShown: useClientOnlyValue(false, false),
+      tabBarStyle: {
+        backgroundColor: themeColors.primary,
+        height: 55,
+        borderWidth:0,
+      },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color="#04061F" />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarLabel: () => null, 
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
@@ -44,15 +50,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="scan"
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="camera" color="#04061F" />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color}/>,
+          tabBarLabel: () => null, 
         }}
+        
       />
       <Tabs.Screen
-        name="test"
+        name="ranking"
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color="#04061F" />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color={color} />,
+          tabBarLabel: () => null, 
         }}
       />
     </Tabs>
