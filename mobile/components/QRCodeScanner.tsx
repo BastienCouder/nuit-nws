@@ -121,35 +121,35 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     },
   });
 
-  const cameraContent = Platform.select({
-    ios: (
-      <CameraView
-        style={styles.camera}
-        type={facing}
-        onBarcodeScanned={handleBarCodeScanned}
-      />
-    ),
-    android: (
-      <CameraView
-        style={styles.camera}
-        type={facing}
-        onBarcodeScanned={handleBarCodeScanned}
-      />
-    ),
-    default: (
-      <Text
-        style={{
-          fontFamily: "FiraSans",
-          fontSize: 15,
-          color: themeColors.primary,
-          textAlign:"center",
-          marginVertical:10
-        }}
-      >
-        La caméra n'est pas disponible sur cette plateforme.
-      </Text>
-    ),
-  });
+  // const cameraContent = Platform.select({
+  //   ios: (
+  //     <CameraView
+  //       style={styles.camera}
+  //       type={facing}
+  //       onBarcodeScanned={handleBarCodeScanned}
+  //     />
+  //   ),
+  //   android: (
+  //     <CameraView
+  //       style={styles.camera}
+  //       type={facing}
+  //       onBarcodeScanned={handleBarCodeScanned}
+  //     />
+  //   ),
+  //   default: (
+  //     <Text
+  //       style={{
+  //         fontFamily: "FiraSans",
+  //         fontSize: 15,
+  //         color: themeColors.primary,
+  //         textAlign:"center",
+  //         marginVertical:10
+  //       }}
+  //     >
+  //       La caméra n'est pas disponible sur cette plateforme.
+  //     </Text>
+  //   ),
+  // });
 
   return (
     <View style={styles.container}>
@@ -166,7 +166,11 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         >
           Profil
         </Text>
-        {cameraContent}
+        <CameraView
+        style={styles.camera}
+        type={facing}
+        onBarcodeScanned={handleBarCodeScanned}
+      />
       </View>
       <Text style={[styles.info, { fontFamily: "FiraSansBold" }]}>
         Scannez votre QR Code pour participer{" "}
