@@ -4,6 +4,7 @@ const router = express.Router();
 
 // User routes
 router.get("/", UserController.readUsers);
+router.get("/:id", UserController.getUserById);
 router.get("/qrcodes", UserController.readQrCodes);
 router.post("/", UserController.createUser);
 

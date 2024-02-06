@@ -39,8 +39,8 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
   const signInWithToken = async (token: string, userDetails: any) => {
     await AsyncStorage.setItem('userToken', JSON.stringify(token));
     await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
-    setUser(userDetails.nom); // Mettre à jour l'état de l'utilisateur
-    router.replace("/"); // Redirection vers l'écran principal ou autre selon votre flux d'application
+    setUser(userDetails.nom);
+    router.replace("/");
   };
 
   const signOut = async () => {

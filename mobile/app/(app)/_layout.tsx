@@ -8,6 +8,10 @@ export default function AppEntry() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
       <Stack.Screen name="modal" options={{ presentation: "card" }} />
+      <Stack.Screen
+          name="[userId]"
+          options={{ headerShown: true,  title:"" }}
+        />
     </Stack>
     </Provider>
   );

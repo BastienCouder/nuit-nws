@@ -12,6 +12,7 @@ import Colors from "@/constants/Colors";
 import { useAppDispatch, useAppSelector } from "@/hook/useHooks";
 import { loadUserDetails } from "@/features/user/userSlice";
 import React from "react";
+import { Link } from "expo-router";
 
 export default function TabOneScreen() {
   const { signOut } = useAuth();
@@ -131,7 +132,7 @@ export default function TabOneScreen() {
           </Text>
         </View>
       </View>
-      {/* <Pressable
+      <Pressable
         onPress={signOut}
         style={({ pressed }) => [
           { padding: 5, borderColor: themeColors.primary, borderWidth: 2 ,marginTop:20},
@@ -150,7 +151,23 @@ export default function TabOneScreen() {
         >
           déconnexion
         </Text>
-      </Pressable> */}
+      </Pressable>
+      <Link
+        href={{
+          pathname: "/[userId]",
+          params: { userId: 5 }
+        }as never}>
+      <Text
+          style={{
+            fontFamily: "FugazOne",
+            fontSize: 20,
+            textAlign: "center",
+            color: themeColors.primary,
+          }}
+        >
+       userid
+        </Text>
+      </Link>
     </View>
   );
 }

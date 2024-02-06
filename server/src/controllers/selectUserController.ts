@@ -5,14 +5,12 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { commonPointsIds } = req.body;
 
-  // Vérifier si commonPointsIds est un tableau et contient jusqu'à trois éléments
   if (!Array.isArray(commonPointsIds) || commonPointsIds.length === 0 || commonPointsIds.length > 3) {
     return res.status(400).json({ error: "commonPointsIds doit être un tableau de 1 à 3 éléments." });
   }
 
   const utilisateurIdInt = parseInt(userId, 10);
   try {
-    // Récupérer le nombre actuel de sélections pour l'utilisateur
     const existingSelections = await prisma.selectionUtilisateur.count({
       where: { userId: utilisateurIdInt },
     });
@@ -20,13 +18,10 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
     if (existingSelections + commonPointsIds.length > 3) {
       return res.status(400).json({ error: "Un utilisateur ne peut avoir que 3 points communs au maximum." });
     }
-
-    // Supprimer les anciennes sélections si elles existent
     await prisma.selectionUtilisateur.deleteMany({
       where: { userId: utilisateurIdInt },
     });
 
-    // Créer de nouvelles sélections pour l'utilisateur
     const selections = await Promise.all(
       commonPointsIds.map((commonPointId: number) =>
         prisma.selectionUtilisateur.create({
@@ -53,23 +48,22 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
 export const compareSelectUser = async (req: Request, res: Response) => {
   const { userId1, userId2 } = req.params;
 
-  // Vérifier si userId1 et userId2 sont présents et valides
   if (!userId1 || isNaN(parseInt(userId1, 10)) || !userId2 || isNaN(parseInt(userId2, 10))) {
     return res.status(400).json({ error: "Les identifiants des utilisateurs sont requis et doivent être des nombres." });
   }
 
   try {
     const selectionsUser1 = await prisma.selectionUtilisateur.findMany({
-      where: {  userId: parseInt(userId1, 10) },
+      where: { userId: parseInt(userId1, 10) },
       include: {
-        commonPoint: true, // Inclure les détails du point commun
+        commonPoint: true,
       },
     });
 
     const selectionsUser2 = await prisma.selectionUtilisateur.findMany({
-      where: {  userId: parseInt(userId2, 10) },
+      where: { userId: parseInt(userId2, 10) },
       include: {
-        commonPoint: true, // Inclure les détails du point commun
+        commonPoint: true,
       },
     });
 
@@ -77,17 +71,30 @@ export const compareSelectUser = async (req: Request, res: Response) => {
       .filter(({ commonPointId }) =>
         selectionsUser2.some(({ commonPoint: point2 }) => commonPointId === point2.id)
       )
-      .map(({ commonPoint }) => commonPoint.contenu); // Extraire le contenu du point commun
+      .map(({ commonPoint }) => commonPoint.contenu);
 
-    if (commonContents.length === 0) {
+    const scoreUpdate = commonContents.length * 1;
+
+    if (commonContents.length > 0) {
+      await prisma.user.update({
+        where: { id: parseInt(userId1, 10) },
+        data: { score: { increment: scoreUpdate } },
+      });
+
+      await prisma.user.update({
+        where: { id: parseInt(userId2, 10) },
+        data: { score: { increment: scoreUpdate } },
+      });
+    } else {
       return res.status(404).json({ message: "Aucun point commun trouvé." });
     }
 
-    res.status(200).json(commonContents);
+    res.status(200).json({ commonContents, scoreUpdate });
   } catch (error: any) {
     res.status(500).json({ error: `Erreur du serveur: ${error.message}` });
   }
 };
+
 
 const selectUserController = {
   createSelectionsForUser, compareSelectUser

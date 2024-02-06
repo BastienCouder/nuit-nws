@@ -166,11 +166,11 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         >
           Profil
         </Text>
-        <CameraView
+        {/* <CameraView
         style={styles.camera}
         type={facing}
         onBarcodeScanned={handleBarCodeScanned}
-      />
+      /> */}
       </View>
       <Text style={[styles.info, { fontFamily: "FiraSansBold" }]}>
         Scannez votre QR Code pour participer{" "}
