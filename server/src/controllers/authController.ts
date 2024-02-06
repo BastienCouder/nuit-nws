@@ -1,3 +1,4 @@
+import { User } from "@prisma/client";
 import prisma from "../config/prisma";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -53,7 +54,7 @@ export const loginWithQR = async (req: Request, res: Response) => {
   }
 };
 
-const generateSessionToken = async (user: any) => {
+const generateSessionToken = async (user: User) => {
   try {
     const activeSession = await prisma.session.findFirst({
       where: {

@@ -3,8 +3,12 @@ import { UserController } from "../controllers/userController";
 const router = express.Router();
 
 // User routes
+router.get("/", UserController.readUsers);
+router.get("/qrcodes", UserController.readQrCodes);
+router.post("/", UserController.createUser);
+
 //swagger
-//users
+//read all users
 /**
  * @swagger
  * /user/:
@@ -16,8 +20,8 @@ const router = express.Router();
  *       500:
  *         description: Erreur lors de la récupération des utilisateurs
  */
-router.get("/", UserController.readUsers);
 
+// create user
 /**
  * @swagger
  * /user/:
@@ -51,7 +55,36 @@ router.get("/", UserController.readUsers);
  *       500:
  *         description: Erreur interne du serveur
  */
-router.post("/", UserController.createUser);
 
+
+//qr codes
+/**
+ * @swagger
+ * /user/qrcodes:
+ *   get:
+ *     summary: Récupérer tous les QR codes des utilisateurs
+ *     description: Cette route permet de récupérer les noms, prénoms et URLs des QR codes de tous les utilisateurs.
+ *     responses:
+ *       200:
+ *         description: Liste des QR codes récupérée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nom:
+ *                     type: string
+ *                     description: Le nom de l'utilisateur
+ *                   prenom:
+ *                     type: string
+ *                     description: Le prénom de l'utilisateur
+ *                   qrCodeUrl:
+ *                     type: string
+ *                     description: L'URL du QR code de l'utilisateur
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 
 export default router;

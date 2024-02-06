@@ -3,12 +3,12 @@ import prisma from "../config/prisma";
 import { Rank } from "@prisma/client";
 
 export const createRank = async (req: Request, res: Response) => {
-  const { idUtilisateur, score } = req.body;
+  const { userId, score } = req.body;
 
   try {
     const rank: Rank = await prisma.rank.create({
       data: {
-        idUtilisateur,
+        userId,
         score,
         position: 0,
       },
@@ -25,7 +25,7 @@ export const readUserRank = async (req: Request, res: Response) => {
 
   try {
     const userRank: Rank | null = await prisma.rank.findUnique({
-      where: { idUtilisateur: userId },
+      where: { userId: userId },
     });
 
     if (!userRank) {
@@ -53,14 +53,14 @@ export const updateRankings = async (req: Request, res: Response) => {
 
       await prisma.rank.upsert({
         where: {
-          idUtilisateur: user.id,
+          userId: user.id,
         },
         update: {
           score: user.score,
           position,
         },
         create: {
-          idUtilisateur: user.id,
+          userId: user.id,
           score: user.score,
           position,
         },
@@ -88,47 +88,11 @@ export const getRankings = async (req: Request, res: Response) => {
   }
 };
 
-export const updateRank = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-  const { score } = req.body;
-
-  try {
-    const updatedRank = await prisma.rank.update({
-      where: { idUtilisateur: userId },
-      data: { score },
-    });
-
-    res.status(200).json({
-      message: "Classement mis à jour avec succès.",
-      rank: updatedRank,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour du classement :", error);
-    res.status(500).json({ error: "Erreur lors de la mise à jour du classement." });
-  }
-};
-
-export const deleteRank = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-
-  try {
-    await prisma.rank.delete({
-      where: { idUtilisateur: userId },
-    });
-    res.status(200).json({ message: "Classement supprimé avec succès." });
-  } catch (error) {
-    console.error("Erreur lors de la suppression du classement :", error);
-    res.status(500).json({ error: "Erreur lors de la suppression du classement." });
-  }
-};
-
 const RankController = {
   createRank,
   readUserRank,
   updateRankings,
   getRankings,
-  updateRank,
-  deleteRank,
 };
 
 export { RankController };

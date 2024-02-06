@@ -8,8 +8,14 @@ const options = {
             version: "1.0.0",
             description: "API de la Nuit-nws",
         },
+        servers: [
+            {
+              url: 'http://localhost:5000',
+              description: 'Serveur de Développement',
+            },
+          ],
     },
-    apis: ["./routes/*"],
+    apis: ["./src/routes/*.ts"],
 }
 
 const swaggerSpec = swaggerJsDoc(options);

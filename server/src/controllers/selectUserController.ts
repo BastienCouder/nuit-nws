@@ -14,7 +14,7 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
   try {
     // Récupérer le nombre actuel de sélections pour l'utilisateur
     const existingSelections = await prisma.selectionUtilisateur.count({
-      where: { utilisateurId: utilisateurIdInt },
+      where: { userId: utilisateurIdInt },
     });
 
     if (existingSelections + commonPointsIds.length > 3) {
@@ -23,16 +23,16 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
 
     // Supprimer les anciennes sélections si elles existent
     await prisma.selectionUtilisateur.deleteMany({
-      where: { utilisateurId: utilisateurIdInt },
+      where: { userId: utilisateurIdInt },
     });
 
     // Créer de nouvelles sélections pour l'utilisateur
     const selections = await Promise.all(
-      commonPointsIds.map((pointCommunId: number) =>
+      commonPointsIds.map((commonPointId: number) =>
         prisma.selectionUtilisateur.create({
           data: {
-            utilisateurId: utilisateurIdInt,
-            pointCommunId,
+            userId: utilisateurIdInt,
+            commonPointId,
           },
         })
       )
@@ -60,24 +60,24 @@ export const compareSelectUser = async (req: Request, res: Response) => {
 
   try {
     const selectionsUser1 = await prisma.selectionUtilisateur.findMany({
-      where: { utilisateurId: parseInt(userId1, 10) },
+      where: {  userId: parseInt(userId1, 10) },
       include: {
-        pointCommun: true, // Inclure les détails du point commun
+        commonPoint: true, // Inclure les détails du point commun
       },
     });
 
     const selectionsUser2 = await prisma.selectionUtilisateur.findMany({
-      where: { utilisateurId: parseInt(userId2, 10) },
+      where: {  userId: parseInt(userId2, 10) },
       include: {
-        pointCommun: true, // Inclure les détails du point commun
+        commonPoint: true, // Inclure les détails du point commun
       },
     });
 
     const commonContents = selectionsUser1
-      .filter(({ pointCommun }) =>
-        selectionsUser2.some(({ pointCommun: point2 }) => pointCommun.id === point2.id)
+      .filter(({ commonPointId }) =>
+        selectionsUser2.some(({ commonPoint: point2 }) => commonPointId === point2.id)
       )
-      .map(({ pointCommun }) => pointCommun.contenu); // Extraire le contenu du point commun
+      .map(({ commonPoint }) => commonPoint.contenu); // Extraire le contenu du point commun
 
     if (commonContents.length === 0) {
       return res.status(404).json({ message: "Aucun point commun trouvé." });

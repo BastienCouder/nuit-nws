@@ -20,10 +20,10 @@ model User {
   score           Int                    @default(0)
   dateInscription DateTime               @default(now())
   qrCodeUrl       String
-  qrToken         String
+  qrToken         String                 @unique
+  lastLoginAt     DateTime
   sessions        Session[]
   ranks           Rank[]
-  lastLoginAt     DateTime
   selections      SelectionUtilisateur[]
 }
 
@@ -36,25 +36,23 @@ model Session {
 }
 
 model CommonPoint {
-  id                   Int                    @id @default(autoincrement())
-  contenu              String                 @unique
-  selectionUtilisateur SelectionUtilisateur[]
+  id         Int                    @id @default(autoincrement())
+  contenu    String
+  selections SelectionUtilisateur[]
 }
 
 model Rank {
-  id            Int  @id @default(autoincrement())
-  idUtilisateur Int  @unique
-  score         Int
-  position      Int
-  user          User @relation(fields: [idUtilisateur], references: [id])
+  id       Int  @id @default(autoincrement())
+  userId   Int  @unique
+  score    Int
+  position Int
+  user     User @relation(fields: [userId], references: [id])
 }
 
 model SelectionUtilisateur {
   id            Int         @id @default(autoincrement())
-  utilisateurId Int
-  pointCommunId Int
-  utilisateur   User        @relation(fields: [utilisateurId], references: [id])
-  pointCommun   CommonPoint @relation(fields: [pointCommunId], references: [id])
-
- // Un utilisateur ne peut pas sélectionner le même point commun plusieurs fois
+  userId        Int         @unique
+  commonPointId Int         @unique
+  user          User        @relation(fields: [userId], references: [id])
+  commonPoint   CommonPoint @relation(fields: [commonPointId], references: [id])
 }
