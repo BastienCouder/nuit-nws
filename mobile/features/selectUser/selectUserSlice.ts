@@ -5,7 +5,7 @@ import { compareUserSelectionsThunk } from './compareUserSelectionsThunk';
 export interface ComparisonResult {
     commonPoints: number;
     message: string;
-  }
+}
 
 interface SelectionState {
   selections:any;
