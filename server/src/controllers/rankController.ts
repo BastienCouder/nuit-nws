@@ -12,6 +12,7 @@ export const createRank = async (req: Request, res: Response) => {
         score,
         position: 0,
       },
+
     });
     res.status(201).json({ message: "Classement créé avec succès.", rank });
   } catch (error) {
@@ -39,7 +40,7 @@ export const readUserRank = async (req: Request, res: Response) => {
   }
 };
 
-export const updateRankings = async (req: Request, res: Response) => {
+export const updateRankings = async () => {
   try {
     const users = await prisma.user.findMany({
       orderBy: {
@@ -66,11 +67,8 @@ export const updateRankings = async (req: Request, res: Response) => {
         },
       });
     }
-
-    res.status(200).json({ message: "Classement mis à jour avec succès." });
   } catch (error) {
     console.error("Erreur lors de la mise à jour du classement :", error);
-    res.status(500).json({ error: "Erreur lors de la mise à jour du classement." });
   }
 };
 
@@ -80,6 +78,7 @@ export const getRankings = async (req: Request, res: Response) => {
       orderBy: {
         position: 'asc',
       },
+      include: { user: true, }
     });
     res.status(200).json(rankings);
   } catch (error) {

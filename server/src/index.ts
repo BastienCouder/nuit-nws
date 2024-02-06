@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import http from "http";
 import dotenv from "dotenv";
+import cors from "cors";
 import express, { Express, Request, Response } from "express";
 
 // Import routes
@@ -22,13 +23,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.text({ type: "/" }));
 
-// // Définir les options de CORS si nécessaire
-// const clientUrl = process.env.CLIENT_URL || "http://localhost:3000"; // Valeur par défaut si CLIENT_URL n'est pas défini
-// const corsOptions = {
-//   origin: [clientUrl], // Utilisation de clientUrl
-//   credentials: true,
-// };
-// app.use(cors(corsOptions));
+// Définir les options de CORS si nécessaire
+const clientUrl = process.env.CLIENT_URL || "http://localhost:8081";
+const corsOptions = {
+  origin: [clientUrl],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 app.get("/", (req: Request, res: Response) => {
     res.send('Express + TypeScript Server. /api-docs pour acceder à la documentation');

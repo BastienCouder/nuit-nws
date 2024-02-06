@@ -25,14 +25,11 @@ export default function TabLayout() {
         flexDirection: 'row', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        position: 'absolute',
-        top:0,
-        left: 0,
-        right: 0,
-        paddingTop: 40,
-        zIndex:9999
+        backgroundColor:'#04061F',
+        paddingTop:20
       }}>
         {/* Ajoutez l'Image */}
+      
         <Image
           source={require('@/assets/images/Logo.png')}
           style={{ width: 100, height: 100, marginLeft: 10}}

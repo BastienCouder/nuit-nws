@@ -2,13 +2,11 @@ import { User } from "@prisma/client";
 import prisma from "../config/prisma";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
 export const loginWithQR = async (req: Request, res: Response) => {
   const { qrToken } = req.body;
 
   try {
     const decoded: any = jwt.verify(qrToken, process.env.JWT_SECRET_KEY!);
-
     const user = await prisma.user.findUnique({
       where: { email: decoded.email },
     });
@@ -17,35 +15,34 @@ export const loginWithQR = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
-    const sessionToken = await generateSessionToken(user);
+    const sessionTokenOrResult = await generateSessionToken(user);
 
-    const {
-      nom,
-      prenom,
-      email,
-      tel,
-      entreprise,
-      poste,
-      score,
-      dateInscription,
-    } = user;
+    if (sessionTokenOrResult.isSessionActive) {
+      // Si la session est déjà active, renvoyez la réponse ici
+      return res.status(200).json({
+        message: "La session est déjà active.",
+        token: null,
+        user: sessionTokenOrResult.user,
+      });
+    }
 
+    // Si une nouvelle session a été créée, renvoyez la réponse avec le nouveau token
     const userResponse = {
-      nom,
-      prenom,
-      email,
-      tel,
-      entreprise,
-      poste,
-      score,
-      dateInscription,
+      nom: user.nom,
+      prenom: user.prenom,
+      email: user.email,
+      tel: user.tel,
+      entreprise: user.entreprise,
+      poste: user.poste,
+      score: user.score,
+      dateInscription: user.dateInscription,
     };
 
     console.log("Authentification réussie: ", userResponse);
 
     res.status(200).json({
       message: "Authentification réussie",
-      token: sessionToken,
+      token: sessionTokenOrResult.token,
       user: userResponse,
     });
   } catch (error) {
@@ -64,7 +61,8 @@ const generateSessionToken = async (user: User) => {
     });
 
     if (activeSession) {
-      return user;
+      // Si la session est déjà active, retournez un objet indiquant cette situation
+      return { isSessionActive: true, user: user };
     }
 
     // Créer une nouvelle session
@@ -76,14 +74,16 @@ const generateSessionToken = async (user: User) => {
     });
 
     // Générer et retourner un jeton de session
-    return jwt.sign({ sessionId: newSession.id }, process.env.ANOTHER_SECRET_KEY!, {
+    const token = jwt.sign({ sessionId: newSession.id }, process.env.ANOTHER_SECRET_KEY!, {
       expiresIn: "365d",
     });
+    return { isSessionActive: false, token: token };
   } catch (error) {
     console.error("Erreur lors de la génération du jeton de session :", error);
     throw error;
   }
 };
+
 
 const authController = {
   loginWithQR,

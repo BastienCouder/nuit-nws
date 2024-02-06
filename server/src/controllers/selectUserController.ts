@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../config/prisma";
+import { updateRankings } from "./rankController";
 
 export const createSelectionsForUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -85,6 +86,7 @@ export const compareSelectUser = async (req: Request, res: Response) => {
         where: { id: parseInt(userId2, 10) },
         data: { score: { increment: scoreUpdate } },
       });
+      await updateRankings();
     } else {
       return res.status(404).json({ message: "Aucun point commun trouvé." });
     }

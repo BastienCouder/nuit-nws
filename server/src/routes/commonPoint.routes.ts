@@ -5,6 +5,9 @@ const router = express.Router();
 // Common Point routes
 router.get("/", commonPointController.readCommonPoints);
 router.post("/", commonPointController.createCommonPoint);
+router.put("/", commonPointController.readCommonPoints);
+router.delete("/", commonPointController.createCommonPoint);
+
 
 // Create Common Point
 /**

@@ -22,6 +22,33 @@ router.post("/", UserController.createUser);
  *         description: Erreur lors de la récupération des utilisateurs
  */
 
+// User By Id
+/**
+ * @swagger
+ * /user/{id}:
+ *   get:
+ *     summary: Récupérer un utilisateur par son ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID de l'utilisateur à récupérer
+ *     responses:
+ *       200:
+ *         description: Utilisateur récupéré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+
+
 // create user
 /**
  * @swagger

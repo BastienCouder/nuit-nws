@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { API_URL } from '@env'
-import { Ranking } from '@/types';
+import { fetchRankings } from './getRankingThunk';
+import { Rank } from '@/types';
 
 // Définir l'état initial
 interface RankingState {
-    rankings: Ranking[];
+    rankings: Rank[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | undefined;
   }
@@ -14,22 +14,6 @@ interface RankingState {
     status: 'idle',
     error: undefined,
   };
-
-// Créer un thunk asynchrone pour charger les classements
-export const fetchRankings = createAsyncThunk<Ranking[], void, { rejectValue: string }>(
-    'ranking/fetchRankings',
-    async (_, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`${API_URL}/rank`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error:any) {
-    return rejectWithValue(error.message || 'An unknown error occurred');
-  }
-});
 
 const rankingSlice = createSlice({
   name: 'ranking',
