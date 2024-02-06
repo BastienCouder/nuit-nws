@@ -7,6 +7,7 @@ const AuthContext = React.createContext<any>(null);
 export function useAuth() {
   return React.useContext(AuthContext);
 }
+
 export function AuthProvider({ children }: React.PropsWithChildren) {
   const rootSegment = useSegments()[0];
   const router = useRouter();
@@ -17,7 +18,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     if (!user && rootSegment !== "(auth)") {
       router.replace("/(auth)/login");
     } else if (user && rootSegment !== "(app)") {
-      router.replace("/");
+      router.replace("/how-to-play");
     }
   }, [user, rootSegment]);
 
@@ -35,7 +36,6 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     loadUserData();
   }, []);
 
-
   const signInWithToken = async (token: string, userDetails: any) => {
     await AsyncStorage.setItem('userToken', JSON.stringify(token));
     await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
 
   const signOut = async () => {
     try {
-      setUser("")
+      setUser("");
       await AsyncStorage.removeItem('userToken');
       await AsyncStorage.removeItem('userDetails');
       router.replace("/(auth)/login");
@@ -60,6 +60,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         user: user,
         signIn: () => {
           setUser("bastien");
+          router.replace('/how-to-play');
         },
         signInWithToken,
         signOut,
