@@ -53,10 +53,11 @@ export default function LoginScreen() {
     <View style={styles.container}>
       {isScanning ? (
      
-        <QRCodeScanner
-          onDone={() => setIsScanning(false)}
-          onStopScan={handleStopScan}
-        />
+        // <QRCodeScanner
+        //   onDone={() => setIsScanning(false)}
+        //   onStopScan={handleStopScan}
+        // />
+        <></>
       ) : (
         <>
           <View
