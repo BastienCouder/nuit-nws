@@ -1,3 +1,4 @@
+import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, useSegments } from "expo-router";
 import * as React from "react";
@@ -54,14 +55,34 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const signIn = async () => {
+    try {
+      const response = await fetch(`${API_URL}}/auth/login/qr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ qrToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvdWRlcmJhc3RpZW5AZ21haWwuY29tIiwiaWF0IjoxNzA3MTY2NzQzLCJleHAiOjE3Mzg3MDI3NDN9.USIpd8UmP2Y2XtyiaEstjJRg_DovhbTgSJglGdqg8jw"}),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
+      }
+
+      const { token, user } = await response.json();
+
+      signInWithToken(token, user);
+    } catch (error) {
+      console.error("Error during connection:", error);
+  
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user: user,
-        signIn: () => {
-          setUser("bastien");
-          router.replace('/how-to-play');
-        },
+        signIn,
         signInWithToken,
         signOut,
       }}
