@@ -1,45 +1,49 @@
-import { useAuth } from '@/context/auth';
-import { API_URL } from '@env';
-import { Camera, CameraType } from 'expo-camera';
-import { useCallback, useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState, useEffect, useCallback } from "react";
+import {
+  StyleSheet,
+  Alert,
+  View,
+  TouchableOpacity,
+  Button,
+  Text,
+  useColorScheme,
+  Platform,
+} from "react-native";
+
+import { CameraView, useCameraPermissions, CameraType } from "expo-camera/next";
+import { useAuth } from "@/context/auth";
+import Colors from "@/constants/Colors";
+import { API_URL } from "@env";
 
 interface QRCodeScannerProps {
   onDone: () => void;
   onStopScan: () => void;
 }
 
-export default function QrCodeScanner({onDone,
-  onStopScan}:QRCodeScannerProps) {
-    const { signInWithToken } = useAuth();
-  const [type, setType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+interface BarCodeEvent {
+  type: string;
+  data: string;
+}
+
+const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
+  onDone,
+  onStopScan,
+}) => {
+  const { signInWithToken } = useAuth();
+  const [facing, setFacing] = useState<CameraType>("back");
+  const [permission, requestPermission] = useCameraPermissions();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
-  if (!permission) {
-    // Camera permissions are still loading
-    return <View />;
-  }
+  useEffect(() => {
+    (async () => {
+      if (!permission?.granted) {
+        await requestPermission();
+      }
+    })();
+  }, [permission, requestPermission]);
 
-  
-
-  if (!permission.granted) {
-    // Camera permissions are not granted yet
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
-
-  function toggleCameraType() {
-    setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
-  }
-  interface BarCodeEvent {
-    type: string;
-    data: string;
-  }
   const handleBarCodeScanned = useCallback(
     async ({ type, data }: BarCodeEvent) => {
       if (isAuthenticated) return;
@@ -70,46 +74,109 @@ export default function QrCodeScanner({onDone,
     [signInWithToken, onDone]
   );
 
+  if (!permission?.granted) {
+    return (
+      <View>
+        <Text>Requesting for camera permission...</Text>
+      </View>
+    );
+  }
+  
+  const styles = StyleSheet.create({
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 20,
+    },
+    card: {
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 20,
+      width: "80%",
+      borderColor: themeColors.primary,
+      borderWidth: 2,
+      borderRadius: 10,
+      backgroundColor: themeColors.background,
+    },
+    camera: {
+      width: 250,
+      height: 250,
+      alignSelf: "center",
+      borderRadius: 20,
+      marginTop: 20,
+    },
+    buttonContainer: {
+      margin: 20,
+    },
+    info: {
+      fontSize: 30,
+      textAlign: "center",
+      color: themeColors.text,
+      paddingHorizontal: 20,
+    },
+  });
+
+  // const cameraContent = Platform.select({
+  //   ios: (
+  //     <CameraView
+  //       style={styles.camera}
+  //       type={facing}
+  //       onBarcodeScanned={handleBarCodeScanned}
+  //     />
+  //   ),
+  //   android: (
+  //     <CameraView
+  //       style={styles.camera}
+  //       type={facing}
+  //       onBarcodeScanned={handleBarCodeScanned}
+  //     />
+  //   ),
+  //   default: (
+  //     <Text
+  //       style={{
+  //         fontFamily: "FiraSans",
+  //         fontSize: 15,
+  //         color: themeColors.primary,
+  //         textAlign:"center",
+  //         marginVertical:10
+  //       }}
+  //     >
+  //       La caméra n'est pas disponible sur cette plateforme.
+  //     </Text>
+  //   ),
+  // });
 
   return (
     <View style={styles.container}>
-       <TouchableOpacity onPress={onStopScan}>
+      <TouchableOpacity onPress={onStopScan}>
         <Text>Stop Scanning</Text>
       </TouchableOpacity>
-      <Camera style={styles.camera} type={type}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
+      <View style={styles.card}>
+        <Text
+          style={{
+            fontFamily: "FugazOne",
+            fontSize: 25,
+            color: themeColors.text,
+          }}
+        >
+          Profil
+        </Text>
+        <CameraView
+        style={styles.camera}
+        type={facing}
+        onBarcodeScanned={handleBarCodeScanned}
+      />
+      </View>
+      <Text style={[styles.info, { fontFamily: "FiraSansBold" }]}>
+        Scannez votre QR Code pour participer{" "}
+      </Text>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  camera: {
-    flex: 1,
-    height:120
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-});
+export default QRCodeScanner;
