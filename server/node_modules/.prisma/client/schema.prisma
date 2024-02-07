@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id              Int                    @id @default(autoincrement())
+  nom             String
+  prenom          String
+  email           String                 @unique
+  tel             String
+  entreprise      String
+  poste           String
+  role            String                 @default("user")
+  score           Int                    @default(0)
+  dateInscription DateTime               @default(now())
+  qrCodeUrl       String
+  qrToken         String                 @unique
+  lastLoginAt     DateTime
+  sessions        Session[]
+  ranks           Rank[]
+  selections      SelectionUtilisateur[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model CommonPoint {
+  id         Int                    @id @default(autoincrement())
+  contenu    String
+  selections SelectionUtilisateur[]
+}
+
+model Rank {
+  id       Int  @id @default(autoincrement())
+  userId   Int  @unique
+  score    Int
+  position Int
+  user     User @relation(fields: [userId], references: [id])
+}
+
+model SelectionUtilisateur {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  commonPointId Int
+  user          User        @relation(fields: [userId], references: [id])
+  commonPoint   CommonPoint @relation(fields: [commonPointId], references: [id])
+}
