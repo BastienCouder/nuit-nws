@@ -109,6 +109,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
       alignSelf: "center",
       borderRadius: 20,
       marginTop: 20,
+      position:"relative",
     },
     buttonContainer: {
       margin: 20,
@@ -120,36 +121,6 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
       paddingHorizontal: 20,
     },
   });
-
-  // const cameraContent = Platform.select({
-  //   ios: (
-  //     <CameraView
-  //       style={styles.camera}
-  //       type={facing}
-  //       onBarcodeScanned={handleBarCodeScanned}
-  //     />
-  //   ),
-  //   android: (
-  //     <CameraView
-  //       style={styles.camera}
-  //       type={facing}
-  //       onBarcodeScanned={handleBarCodeScanned}
-  //     />
-  //   ),
-  //   default: (
-  //     <Text
-  //       style={{
-  //         fontFamily: "FiraSans",
-  //         fontSize: 15,
-  //         color: themeColors.primary,
-  //         textAlign:"center",
-  //         marginVertical:10
-  //       }}
-  //     >
-  //       La caméra n'est pas disponible sur cette plateforme.
-  //     </Text>
-  //   ),
-  // });
 
   return (
     <View style={styles.container}>
