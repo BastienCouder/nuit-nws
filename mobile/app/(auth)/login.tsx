@@ -1,21 +1,20 @@
 import React, { useState } from "react";
 import {
-  Button,
   Pressable,
   StyleSheet,
-  TouchableOpacity,
   useColorScheme,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
-import QRCodeScanner from "@/components/QRCodeScanner";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/auth";
+import { API_URL, QRTOKEN } from "@env";
 
 export default function LoginScreen() {
   const [isScanning, setIsScanning] = useState(false);
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme === "dark" ? "dark" : "light"];
   const { signIn } = useAuth();
+  
   const handleStopScan = () => {
     setIsScanning(false);
   };
@@ -24,9 +23,27 @@ export default function LoginScreen() {
     setIsScanning(true);
   };
 
-  const handleSignIn = () => {
-    // Logique pour se connecter sans QR code
-    signIn();
+  const handleSignIn = async () => {
+    try {
+      const response = await fetch(`${API_URL}/auth/login/qr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ qrToken: `${QRTOKEN}`}),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
+      }
+
+      const { token, user } = await response.json();
+
+      signIn(token, user);
+    } catch (error) {
+      console.error("Error during connection:", error);
+  
+    }
   };
 
   const styles = StyleSheet.create({
@@ -52,11 +69,11 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       {isScanning ? (
-     
-        <QRCodeScanner
-          onDone={() => setIsScanning(false)}
-          onStopScan={handleStopScan}
-        />
+     <></>
+        // <QRCodeScanner
+        //   onDone={() => setIsScanning(false)}
+        //   onStopScan={handleStopScan}
+        // />
       ) : (
         <>
           <View

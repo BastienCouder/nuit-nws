@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/hook/useHooks";
 import Colors from "@/constants/Colors";
 import { fetchRankings } from "@/features/rank/getRankingThunk";
 import { loadUserDetails } from "@/features/user/userSlice";
+import { Rank } from "@/types";
 
 export default function TabRankingScreen() {
   const rankingState = useAppSelector((state: RootState) => state.ranking);
@@ -26,7 +27,7 @@ export default function TabRankingScreen() {
   const userRanking = React.useMemo(
     () =>
       rankingState.rankings.find(
-        (rank) => rank.userId === userState.userDetails?.id
+        (rank:Rank) => rank.userId === userState.userDetails?.id
       ),
     [rankingState.rankings, userState.userDetails]
   );

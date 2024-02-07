@@ -17,7 +17,7 @@ export default function TabOneScreen() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
-  const { userDetails, status, error } = useAppSelector((state) => state.user);
+  const { userDetails, status, error } = useAppSelector((state:any) => state.user);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
@@ -131,8 +131,16 @@ export default function TabOneScreen() {
         </View>
         <View style={styles.separator} />
         <View style={styles.score}>
-          <Text style={styles.scoreTitle}>Score</Text>
-          <Text style={styles.points}>
+          <Text style={{
+            fontFamily: "FugazOne",
+            fontSize: 25,
+            color: themeColors.background,
+          }}>Score</Text>
+          <Text style={{
+            fontFamily: "FugazOne",
+            fontSize: 20,
+            color: themeColors.background,
+          }}>
             {userDetails.score} {userDetails.score > 1 ? "points" : "point"}
           </Text>
         </View>
