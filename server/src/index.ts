@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import http from "http";
+import https from "https";
 import dotenv from "dotenv";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
@@ -16,7 +16,7 @@ import  swaggerDocument  from "./config/swagger";
 dotenv.config();
 
 const app: Express = express();
-const server = http.createServer(app);
+const server = https.createServer(app);
 
 // Middleware
 app.use(express.json());
