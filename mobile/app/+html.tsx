@@ -33,6 +33,9 @@ const responsiveBackground = `
 body {
   background-color: #000;
 }
+video {
+  position : relative;
+}
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #000;
