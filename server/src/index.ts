@@ -45,6 +45,11 @@ app.use("/commonPoint", commonPointRoutes);
 // Route pour la documentation Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.use((err:Error, req:Request, res:Response) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 // Lancement du serveur
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));
