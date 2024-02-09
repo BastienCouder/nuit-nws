@@ -86,7 +86,7 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      <View style={{ position: 'absolute', bottom: 100, right: 50}}>
+      <View style={{ position: 'absolute', bottom: 100, right: 30}}>
         <Link href="/how-to-play">
           <Pressable>
             <Text style={{ color: '#FFF', fontSize: 32, fontFamily: 'FugazOne',  backgroundColor: '#0047AB', textAlign: "center", width: 70, height: 70, borderRadius: 50, paddingTop: 15}}>?</Text>
