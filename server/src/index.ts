@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import https from "https";
+import http from "http";
 import dotenv from "dotenv";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
@@ -16,7 +16,7 @@ import  swaggerDocument  from "./config/swagger";
 dotenv.config();
 
 const app: Express = express();
-const server = https.createServer(app);
+const server = http.createServer(app);
 
 // Middleware
 app.use(express.json());
@@ -44,11 +44,6 @@ app.use("/commonPoint", commonPointRoutes);
 
 // Route pour la documentation Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.use((err:Error, req:Request, res:Response) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
 
 // Lancement du serveur
 const PORT = process.env.PORT || 5000;
