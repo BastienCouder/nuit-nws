@@ -38,9 +38,9 @@ const HowToPlayScreen = () => {
       fontFamily: "FugazOne",
       fontSize: 32,
       textAlign: "center",
-      marginLeft: 40,
-      marginRight: 40,
-      padding: 10, // Ajout du padding
+      paddingLeft: 60,
+      paddingRight: 60,
+      padding: 10,
       backgroundColor: themeColors.secondary,
       borderRadius: 10,
       overflow: 'hidden',
