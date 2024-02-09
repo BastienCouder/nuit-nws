@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native'; // Import Pressable
+import { StyleSheet, Text, View, Pressable, Dimensions } from 'react-native'; // Import Pressable
 import { Link } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import Colors from '@/constants/Colors';
@@ -8,39 +8,46 @@ const HowToPlayScreen = () => {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
 
+  // Obtenir la largeur de l'écran
+  const screenWidth = Dimensions.get('window').width;
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: "center",
-      paddingTop:40,
+      paddingTop: 40,
       backgroundColor: themeColors.background,
     },
     title: {
       fontSize: 32,
       fontWeight: 'bold',
       fontFamily: "FugazOne",
+      textAlign: 'center', // Centrer le texte
+      marginBottom: 20, // Espacement en bas
     },
     description: {
       fontSize: 20,
       fontFamily: "FugazOne",
-      padding: 50,
+      padding: 20, // Réduire le padding
+      textAlign: 'center', // Centrer le texte
     },
     separator: {
       height: 1,
       width: '80%',
+      marginBottom: 20, // Espacement en bas
     },
     intent: {
       fontSize: 32,
       fontFamily: "FugazOne",
-      padding: 50,
+      padding: 20, // Réduire le padding
+      textAlign: 'center', // Centrer le texte
     },
     buttonText: {
       fontFamily: "FugazOne",
-      fontSize: 32,
+      fontSize: 24, // Réduire la taille du texte
       textAlign: "center",
-      paddingLeft: 60,
-      paddingRight: 60,
-      padding: 10,
+      paddingHorizontal: screenWidth * 0.1, // Ajuster la largeur du bouton en fonction de la largeur de l'écran
+      paddingVertical: 10, // Réduire le padding vertical
       backgroundColor: themeColors.secondary,
       borderRadius: 10,
       overflow: 'hidden',
