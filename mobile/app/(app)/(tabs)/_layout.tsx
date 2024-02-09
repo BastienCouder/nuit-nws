@@ -29,12 +29,10 @@ export default function TabLayout() {
         paddingTop:20
       }}>
         {/* Ajoutez l'Image */}
-      
         <Image
           source={require('@/assets/images/Logo.png')}
           style={{ width: 100, height: 100, marginLeft: 10}}
         />
-
         {/* Texte "La nuit de la NWS" avec la couleur du background */}
         <Text style={{ color: themeColors.primary, fontSize: 24, marginLeft: 10, fontFamily: 'FugazOne' }}>
           La nuit de la NWS
@@ -87,6 +85,14 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+
+      <View style={{ position: 'absolute', bottom: 100, right: 30}}>
+        <Link href="/how-to-play">
+          <Pressable>
+            <Text style={{ color: '#FFF', fontSize: 32, fontFamily: 'FugazOne',  backgroundColor: '#0047AB', textAlign: "center", width: 70, height: 70, borderRadius: 50, paddingTop: 15}}>?</Text>
+          </Pressable>
+        </Link>
+      </View>
     </View>
   );
 }
