@@ -13,7 +13,7 @@ import {
 import { CameraView, useCameraPermissions, CameraType } from "expo-camera/next";
 import { useAuth } from "@/context/auth";
 import Colors from "@/constants/Colors";
-import { API_URL } from "@env";
+import themeColors from "@/constants/Colors";
 
 interface QRCodeScannerProps {
   onDone: () => void;
@@ -29,12 +29,10 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   onDone,
   onStopScan,
 }) => {
-  const { signInWithToken } = useAuth();
+  const { signIn } = useAuth();
   const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
   useEffect(() => {
     (async () => {
@@ -48,7 +46,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     async ({ type, data }: BarCodeEvent) => {
       if (isAuthenticated) return;
       try {
-        const response = await fetch(`${API_URL}}/auth/login/qr`, {
+        const response = await fetch(`https://nuit-nws.bastiencouder.com/auth/login/qr`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -63,7 +61,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         const { token, user } = await response.json();
 
         setIsAuthenticated(true);
-        signInWithToken(token, user);
+        signIn(token, user);
         onDone();
       } catch (error) {
         console.error("Error during connection:", error);
@@ -71,7 +69,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         onDone();
       }
     },
-    [signInWithToken, onDone]
+    [signIn, onDone]
   );
 
   if (!permission?.granted) {

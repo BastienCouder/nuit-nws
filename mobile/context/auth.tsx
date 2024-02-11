@@ -1,78 +1,55 @@
-import { User } from "@/types";
-import { API_URL } from "@env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter, useSegments } from "expo-router";
-import * as React from "react";
+import * as React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { User } from '@/types';
 
-const AuthContext = React.createContext<any>(null);
-
-export function useAuth() {
-  return React.useContext(AuthContext);
+interface AuthContextType {
+  signIn: (token: string, userDetails: User) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
-export function AuthProvider({ children }: React.PropsWithChildren) {
-  const rootSegment = useSegments()[0];
+const AuthContext = React.createContext<AuthContextType | null>(null);
+
+export function useAuth() {
+  const context = React.useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
+
+export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const router = useRouter();
-  const [user, setUser] = React.useState<string | undefined>("");
 
-  React.useEffect(() => {
-    if (user === undefined) return;
-    if (!user && rootSegment !== "(auth)") {
-      router.replace("/(auth)/login");
-    } else if (user && rootSegment !== "(app)") {
-      router.replace("/how-to-play");
+  const authenticateUser = async (token: string, userDetails: User) => {
+    try {
+      await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
+      // Directly navigate without relying on a React state
+      router.replace('/');
+    } catch (error) {
+      console.error('Error during authentication:', error);
     }
-  }, [user, rootSegment]);
-
-  React.useEffect(() => {
-    const loadUserData = async () => {
-      const storedUserToken = await AsyncStorage.getItem('userToken');
-      const storedUserDetails = await AsyncStorage.getItem('userDetails');
-
-      if (storedUserToken && storedUserDetails) {
-        const userDetails = JSON.parse(storedUserDetails);
-        setUser(userDetails.nom);
-      }
-    };
-
-    loadUserData();
-  }, []);
-
-  const signInWithToken = async (token: string, userDetails: User) => {
-    await AsyncStorage.setItem('userToken', JSON.stringify(token));
-    await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
-    setUser(userDetails.nom);
-    router.replace("/");
   };
 
-  const signOut = async () => {
+  const signIn = async (token: string, userDetails: User): Promise<void> => {
+    await authenticateUser(token, userDetails);
+  };
+
+  const signOut = async (): Promise<void> => {
     try {
-      setUser("");
       await AsyncStorage.removeItem('userToken');
       await AsyncStorage.removeItem('userDetails');
-      router.replace("/(auth)/login");
+      // Directly navigate without relying on a React state
+      router.replace('/(auth)/login');
     } catch (error) {
-      console.log('Error signing out: ', error);
+      console.error('Error signing out:', error);
     }
   };
 
-  const signIn = async (token: string, userDetails: User) => {
-    await AsyncStorage.setItem('userToken', JSON.stringify(token));
-    await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
-    setUser(userDetails.nom);
-    router.replace("/how-to-play");
-  }
-
   return (
-    <AuthContext.Provider
-      value={{
-        user: user,
-        signIn,
-        signInWithToken,
-        signOut,
-      }}
-    >
+    <AuthContext.Provider value={{ signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};

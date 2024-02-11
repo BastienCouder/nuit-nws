@@ -1,14 +1,8 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Slot} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { useColorScheme } from "@/components/useColorScheme";
 import { AuthProvider } from "@/context/auth";
 
 export {
@@ -54,13 +48,12 @@ export default function RootLayout() {
 
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      
         <Slot />
-      </ThemeProvider>
+
     </AuthProvider>
   );
 }

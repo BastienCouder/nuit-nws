@@ -33,9 +33,12 @@ const responsiveBackground = `
 body {
   background-color: #000;
 }
-.r-u8s1d {
-  position : relative !important;
-}
+// .r-position-u8s1d{
+//   position : relative !important;
+// }
+// .r-u8s1d {
+//   position : relative !important;
+// }
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #000;

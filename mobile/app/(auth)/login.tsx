@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import {
+  Image,
   Pressable,
   StyleSheet,
-  useColorScheme,
+  Text,
+  View,
 } from "react-native";
-import { Text, View } from "@/components/Themed";
-import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/auth";
-import { API_URL, QRTOKEN } from "@env";
+import { QRTOKEN } from "@env";
+import themeColors from "@/constants/Colors";
 
 export default function LoginScreen() {
   const [isScanning, setIsScanning] = useState(false);
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme === "dark" ? "dark" : "light"];
   const { signIn } = useAuth();
   
   const handleStopScan = () => {
@@ -25,49 +24,33 @@ export default function LoginScreen() {
 
   const handleSignIn = async () => {
     try {
-      const response = await fetch(`${API_URL}/auth/login/qr`, {
+      const response = await fetch('https://nuit-nws.bastiencouder.com/auth/login/qr', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ qrToken: `${QRTOKEN}`}),
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP status ${response.status}`);
       }
-
-      const { token, user } = await response.json();
-
+      
+      const data = await response.json();
+      const { token, user } = data;
+      
       signIn(token, user);
     } catch (error) {
       console.error("Error during connection:", error);
-  
     }
   };
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: themeColors.background,
-      gap: 40,
-    },
-    title: {
-      fontSize: 25,
-      fontWeight: "bold",
-      color: themeColors.primary,
-    },
-    button: {
-      backgroundColor: themeColors.secondary,
-      borderRadius: 10,
-      paddingVertical: 20,
-    },
-  });
-
   return (
     <View style={styles.container}>
+      <Image
+          source={require("@/assets/images/logo.svg")}
+          style={{width:250, height: 255,objectFit:"contain" }}
+        />
       {isScanning ? (
         // <QRCodeScanner
         //   onDone={() => setIsScanning(false)}
@@ -79,6 +62,7 @@ export default function LoginScreen() {
           <View
             style={{ backgroundColor: "blue", borderRadius: 10, width: "80%" }}
           >
+            
             <Pressable
               onPress={handleQRCodeScan}
               style={({ pressed }) => [
@@ -134,3 +118,23 @@ export default function LoginScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: themeColors.background,
+    gap: 40,
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: themeColors.primary,
+  },
+  button: {
+    backgroundColor: themeColors.secondary,
+    borderRadius: 10,
+    paddingVertical: 20,
+  },
+});

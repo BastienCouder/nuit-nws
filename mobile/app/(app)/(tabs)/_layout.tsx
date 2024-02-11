@@ -1,98 +1,119 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, View, Text, Image } from 'react-native';
+import React from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Link, Tabs } from "expo-router";
+import { Pressable, View, Text, Image, ActivityIndicator } from "react-native";
+import themeColors from "@/constants/Colors";
+import { usePathname } from 'expo-router';
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
+export function TabBarIcon(props: {
+   name: React.ComponentProps<typeof FontAwesome>["name"];
+   color: string;
+ }) {
+   return (
+     <FontAwesome
+       size={28}
+       style={{ marginBottom: -2,}}
+       {...props}
+     />
+   );
+ }
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+  const pathname = usePathname ();
 
-  function TabBarIcon(props: {
-    name: React.ComponentProps<typeof FontAwesome>['name'];
-    color: string;
-  }) {
-    return <FontAwesome size={28} style={{ marginBottom: -2, color: '#04061F' }} {...props} />;
-  }
+  const isUserPage = pathname.startsWith('/user/');
 
   return (
     <View style={{ flex: 1 }}>
       {/* Carré et texte en haut de la page */}
-      <View style={{ 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor:'#04061F',
-        paddingTop:20
-      }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#04061F",
+          paddingTop: 20,
+        }}
+      >
         {/* Ajoutez l'Image */}
         <Image
-          source={require('@/assets/images/Logo.png')}
-          style={{ width: 100, height: 100, marginLeft: 10}}
+          source={require("@/assets/images/logo-layout.svg")}
         />
-        {/* Texte "La nuit de la NWS" avec la couleur du background */}
-        <Text style={{ color: themeColors.primary, fontSize: 24, marginLeft: 10, fontFamily: 'FugazOne' }}>
-          La nuit de la NWS
-        </Text>
       </View>
 
-      {/* Le reste de votre interface utilisateur */}
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: themeColors.background,
-          headerShown: useClientOnlyValue(false, false),
-          tabBarStyle: {
-            backgroundColor: themeColors.primary,
-            height: 55,
-            borderWidth: 0,
-          },
-        }}>
-        <Tabs.Screen
-          name="index"
-          options={{
-            tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-            tabBarLabel: () => null,
-            headerRight: () => (
-              <Link href="/modal" asChild>
-                <Pressable>
-                  {({ pressed }: any) => (
-                    <FontAwesome
-                      size={25}
-                      color={Colors[colorScheme ?? 'light'].text}
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
-              </Link>
-            ),
+        <Tabs
+          screenOptions={{
+            tabBarActiveTintColor: themeColors.background,
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: themeColors.primary,
+              height: 55,
+              borderWidth: 0,
+            },
           }}
-        />
-        <Tabs.Screen
-          name="scan"
-          options={{
-            tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />,
-            tabBarLabel: () => null,
-          }}
-        />
-        <Tabs.Screen
-          name="ranking"
-          options={{
-            tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color={color} />,
-            tabBarLabel: () => null,
-          }}
-        />
-      </Tabs>
+        >
+          <Tabs.Screen
+            name="index"
+            options={{
+              tabBarIcon: () => (
+                <TabBarIcon name="user" color={themeColors.background} />
+              ),
+              tabBarLabel: () => null,
+            }}
+          />
+          <Tabs.Screen
+            name="scan"
+            options={{
+              tabBarIcon: () => (
+                <TabBarIcon name="camera" color={themeColors.background} />
+              ),
+              tabBarLabel: () => null,
+            }}
+          />
+          <Tabs.Screen
+            name="ranking"
+            options={{
+              tabBarIcon: () => (
+                <TabBarIcon name="trophy" color={themeColors.background} />
+              ),
+              tabBarLabel: () => null,
+            }}
+          />
+          <Tabs.Screen
+            name="user/[userId]"
+            options={{
+              tabBarIcon: () => null,
+              tabBarLabel: () => null,
+              tabBarButton: () => null, 
+            }}
+          />
+        </Tabs>
+        
 
-      <View style={{ position: 'absolute', bottom: 100, right: 30}}>
+        {!isUserPage && (
+      <View style={{ position: "absolute", bottom: 80, right: 30 }}>
         <Link href="/how-to-play">
           <Pressable>
-            <Text style={{ color: '#FFF', fontSize: 32, fontFamily: 'FugazOne',  backgroundColor: '#0047AB', textAlign: "center", width: 70, height: 70, borderRadius: 50, paddingTop: 15}}>?</Text>
+            <Text
+              style={{
+                color: themeColors.text,
+                fontSize: 25,
+                fontFamily: "FugazOne",
+                backgroundColor: themeColors.secondary,
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                paddingTop: 6,
+                display: "flex",
+                alignSelf: "center",
+                justifyContent: "center",
+              }}
+            >
+              ?
+            </Text>
           </Pressable>
         </Link>
       </View>
+        )}
     </View>
   );
 }

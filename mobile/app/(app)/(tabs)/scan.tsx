@@ -1,53 +1,77 @@
-import { StyleSheet, useColorScheme } from 'react-native';
-import { Text, View } from '@/components/Themed';
-import Colors from '@/constants/Colors';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Link } from 'expo-router';
+import themeColors from '@/constants/Colors';
 
 export default function TabScanScreen() {
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text
+          style={{
+            fontFamily: "FugazOne",
+            fontSize: 25,
+            color: themeColors.text,
+          }}
+        >
+          Profil
+        </Text>
+     
+      <Link
+  href={
+    {
+      pathname: "user/[userId]",
+      params: { userId: 4 },
+    } as never
+  }
+>
+  <Text >Voir Profil</Text>
+</Link>
+      </View>
+      <Text style={styles.info }>
+        Scannez le QR Code d'une personne
+      </Text>
+    </View>
+  );
+}
+
  
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 20,
     backgroundColor:themeColors.background
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    backgroundColor:themeColors.background
-
+  card: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    width: "80%",
+    borderColor: themeColors.primary,
+    borderWidth: 2,
+    borderRadius: 10,
+    backgroundColor: themeColors.background,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  camera: {
+    width: 250,
+    height: 250,
+    alignSelf: "center",
+    borderRadius: 20,
+    marginTop: 20,
+    position:"relative",
   },
-  buttonText: {
-    fontFamily: "FugazOne",
-    fontSize: 20,
+  buttonContainer: {
+    margin: 20,
+  },
+  info: {
+    fontSize: 25,
     textAlign: "center",
-    color: themeColors.primary,
+    color: themeColors.text,
+    paddingHorizontal: 20,
+    fontFamily:"FiraSansBold"
   },
 });
 
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Link
-        href={
-          {
-            pathname: "/[userId]",
-            params: { userId: 5 },
-          } as never
-        }
-      >
-        <Text style={styles.buttonText}>Voir Profil</Text>
-      </Link>
-    </View>
-  );
-}
