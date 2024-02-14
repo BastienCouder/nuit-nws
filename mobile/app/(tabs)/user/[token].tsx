@@ -9,14 +9,12 @@ import {
   View,
 } from "react-native";
 import * as React from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import themeColors from "@/constants/Colors";
 import {
   compareUserSelections,
   submitCommonPointsSelections,
 } from "@/features/commonPointsSelection";
-import useFetchUserDetails from "@/hook/useFetchUserDetails";
-import useFetchCommonPoints from "@/hook/useFetchCommonPoints";
 import useUserDetailsFromStorage from "@/hook/useUserDetailsFromStorage";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { RootState } from "@/app/store";

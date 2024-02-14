@@ -1,43 +1,39 @@
-import React from 'react';
-import { BarCodeScanningResult, Camera, CameraType } from 'expo-camera';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { RNCamera } from 'react-native-camera';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
-interface CameraComponent {
-    handleBarCodeScanned:((scanningResult: BarCodeScanningResult) => void) | undefined;
+interface CameraComponentProps {
+  handleBarCodeScanned?: (scanResult: any) => void; // Ajustez selon le type approprié
 }
 
-export default function CameraComponent({handleBarCodeScanned}:CameraComponent)  {
-  const [type, setType] = React.useState<CameraType>(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+const CameraComponent: React.FC<CameraComponentProps> = ({ handleBarCodeScanned }) => {
+  // Utilisation directe de RNCamera.Constants pour accéder à Type et FlashMode
+  // const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
 
-  if (!permission) {
-    // Camera permissions are still loading
-    return <View />;
-  }
+  // const toggleCameraType = () => {
+  //   setCameraType((prevCameraType: any) =>
+  //     prevCameraType === RNCamera.Constants.Type.back
+  //       ? RNCamera.Constants.Type.front
+  //       : RNCamera.Constants.Type.back,
+  //   );
+  // };
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={() => requestPermission()} title="Grant Permission" />
-      </View>
-    );
-  }
 
-  const toggleCameraType = () => {
-    setType((current) => (current === CameraType.back ? CameraType.back : CameraType.front ));
-  };
 
   return (
     <View style={styles.container}>
-       
-      <Camera style={styles.camera} type={type}  onBarCodeScanned={handleBarCodeScanned}>
+      {/* <RNCamera
+        style={styles.camera}
+        type={cameraType}
+        flashMode={RNCamera.Constants.FlashMode.auto}
+        onBarCodeRead={handleBarCodeScanned}
+      >
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+            <Text style={styles.text}>Flip</Text>
           </TouchableOpacity>
         </View>
-      </Camera>
+      </RNCamera> */}
     </View>
   );
 };
@@ -45,27 +41,32 @@ export default function CameraComponent({handleBarCodeScanned}:CameraComponent) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignSelf:"center"
+    flexDirection: 'column',
+    backgroundColor: 'black',
   },
   camera: {
     flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   buttonContainer: {
-    flex: 1,
+    flex: 0,
     flexDirection: 'row',
-    backgroundColor: 'transparent',
-    marginHorizontal: 120,
-    marginVertical: 120,
+    justifyContent: 'center',
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
+    flex: 0,
+    padding: 10,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    margin: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
   },
   text: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
 });
+
+export default CameraComponent;

@@ -11,11 +11,6 @@ interface QRCodeScannerProps {
   onDone: () => void;
 }
 
-interface BarCodeEvent {
-  type: string;
-  data: string;
-}
-
 const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   onDone,
 }) => {
@@ -49,7 +44,7 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         type={facing}
         onBarcodeScanned={handleBarCodeScanned}
       /> */}
-        {/* <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/> */}
+        <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/>
       </View>
       <Text style={styles.info}>
         Scannez votre QR Code pour participer

@@ -16,7 +16,7 @@ export default function TabScanScreen() {
         >
           Profil
         </Text>
-        {/* <CameraComponent /> */}
+        <CameraComponent />
         <Link
           href={
             {
