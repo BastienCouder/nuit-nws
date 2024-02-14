@@ -1,7 +1,7 @@
 import bodyParser from "body-parser";
 import http from "http";
 import dotenv from "dotenv";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import express, { Express, Request, Response } from "express";
 
 // Import routes
@@ -24,12 +24,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.text({ type: "/" }));
 
 // Définir les options de CORS si nécessaire
-const clientUrl = process.env.CLIENT_URL || "http://localhost:8081";
-const corsOptions = {
-  origin: [clientUrl],
-  credentials: true,
-};
-app.use(cors(corsOptions));
+// const allowedOrigins = ['http://localhost:8081', 'https://nuit-nws.bastiencouder.com'];
+
+// const corsOptions: CorsOptions = {
+//     origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+//       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'), false);
+//       }
+//     },
+//     credentials: true,
+// };
+// app.use(cors(corsOptions));
+
+app.use(cors({
+  origin: "*", // Permet à toutes les origines d'accéder à l'API
+  credentials: true, // Permet les requêtes avec des credentials (cookies, données d'authentification, etc.)
+}));
 
 app.get("/", (req: Request, res: Response) => {
     res.send('Express + TypeScript Server. /api-docs pour acceder à la documentation');

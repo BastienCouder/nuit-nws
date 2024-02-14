@@ -95,13 +95,13 @@ const truncatedQrCodeUrl = qrCodeUrl.length > maxLength ? qrCodeUrl.substring(0,
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+export const getUserByToken = async (req: Request, res: Response) => {
+  const { token } = req.params;
 
   try {
     const user: User | null = await prisma.user.findUnique({
       where: {
-        id: Number(id),
+       qrToken: token,
       },
     });
 
@@ -116,28 +116,12 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-//code qr
-export const readQrCodes = async (req: Request, res: Response) => {
-  try {
-      const users = await prisma.user.findMany({
-          select: {
-              nom: true,
-              prenom: true,
-              qrCodeUrl: true,
-          }
-      });
-      res.status(200).json(users);
-  } catch (error) {
-      console.error("Erreur lors de la récupération des utilisateurs :", error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-}
+
 
 const UserController = {
   readUsers,
   createUser,
-  getUserById,
-  readQrCodes
+  getUserByToken,
 };
 
 export { UserController };

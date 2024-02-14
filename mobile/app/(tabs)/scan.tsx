@@ -1,9 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Link } from 'expo-router';
-import themeColors from '@/constants/Colors';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
+import themeColors from "@/constants/Colors";
+import CameraComponent from "@/components/CameraComponent";
 
 export default function TabScanScreen() {
-
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -16,33 +16,32 @@ export default function TabScanScreen() {
         >
           Profil
         </Text>
-     
-      <Link
-  href={
-    {
-      pathname: "user/[userId]",
-      params: { userId: 4 },
-    } as never
-  }
->
-  <Text >Voir Profil</Text>
-</Link>
+        {/* <CameraComponent /> */}
+        <Link
+          href={
+            {
+              pathname: "user/[userId]",
+              params: { userId: 4 },
+            } as never
+          }
+        >
+          <Text>Voir Profil</Text>
+        </Link>
       </View>
-      <Text style={styles.info }>
-        Scannez le QR Code d'une personne
-      </Text>
+      <Text style={styles.info}>Scannez le QR Code d'une personne</Text>
     </View>
   );
 }
 
- 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     gap: 20,
-    backgroundColor:themeColors.background
+    backgroundColor: themeColors.background,
+    paddingBottom: 55,
+    paddingTop:40
   },
   card: {
     alignItems: "center",
@@ -52,6 +51,7 @@ const styles = StyleSheet.create({
     borderColor: themeColors.primary,
     borderWidth: 2,
     borderRadius: 10,
+    gap:20,
     backgroundColor: themeColors.background,
   },
   camera: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 20,
     marginTop: 20,
-    position:"relative",
+    position: "relative",
   },
   buttonContainer: {
     margin: 20,
@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: themeColors.text,
     paddingHorizontal: 20,
-    fontFamily:"FiraSansBold"
+    fontFamily: "FiraSansBold",
   },
 });
-
-

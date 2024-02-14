@@ -1,9 +1,11 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
-import { Slot} from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { AuthProvider } from "@/context/auth";
+import { Provider } from "react-redux";
+import store from "./store";
+import { AuthProvider } from "@/context/authContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -12,7 +14,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(app)",
+  initialRouteName: "(tabs)",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -26,7 +28,6 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -45,15 +46,22 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-
-
 function RootLayoutNav() {
-
   return (
-    <AuthProvider>
-      
-        <Slot />
-
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{ headerShown: false, presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="(auth)/login"
+            options={{ headerShown: false, presentation: "modal" }}
+          />
+        </Stack>
+      </AuthProvider>
+    </Provider>
   );
 }

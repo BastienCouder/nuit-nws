@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,88 +9,85 @@ import {
   View,
 } from "react-native";
 import * as React from "react";
-import { Link, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import themeColors from "@/constants/Colors";
-import { CommonPoint, User } from "@/types";
-import TabLayout, { TabBarIcon } from "../_layout";
+import {
+  compareUserSelections,
+  submitCommonPointsSelections,
+} from "@/features/commonPointsSelection";
+import useFetchUserDetails from "@/hook/useFetchUserDetails";
+import useFetchCommonPoints from "@/hook/useFetchCommonPoints";
+import useUserDetailsFromStorage from "@/hook/useUserDetailsFromStorage";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { RootState } from "@/app/store";
+import { fetchUserDetails } from "@/features/UserSlice";
+import { fetchCommonPoints } from "@/features/CommonPointsSlice";
 
 export default function UserScreen() {
-  const { userId } = useLocalSearchParams();
-  const [userDetails, setUserDetails] = React.useState<User | null>(null);
-  const [commonPoints, setCommonPoints] = React.useState<CommonPoint[]>([]);
-  const [selectedValues, setSelectedValues] = React.useState<string[]>([]);
+  const { token } = useLocalSearchParams();
+  const dispatch = useAppDispatch();
 
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<string>("");
+  const {
+    userDetails: user,
+    loading: loadingUserDetails,
+    error: errorUserDetails,
+  } = useUserDetailsFromStorage();
 
-  const [completeScrollBarHeight, setCompleteScrollBarHeight] =
-    React.useState(1);
-  const [visibleScrollBarHeight, setVisibleScrollBarHeight] = React.useState(0);
+  const { userDetails, loading:userDetailsLoading , error: userDetailsError  } = useAppSelector((state: RootState) => state.user);
+ const { commonPoints, loading: commonPointsLoading, error:commonPointsError } = useAppSelector((state: RootState) => state.commonPoints);
+ 
+ React.useEffect(() => {
+    if (token) {
+      dispatch(fetchUserDetails(String(token)));
+    }
+  }, [dispatch, token]);
 
-  const scrollIndicatorSize =
-    completeScrollBarHeight > visibleScrollBarHeight
-      ? (visibleScrollBarHeight * visibleScrollBarHeight) /
-        completeScrollBarHeight
-      : visibleScrollBarHeight;
+  React.useEffect(() => {
+    dispatch(fetchCommonPoints());
+  }, [dispatch]);
 
-  const [isVisible, setIsVisible] = React.useState<boolean>(false); // État pour gérer la visibilité
+  const [selectedValues, setSelectedValues] = React.useState<number[]>([]);
+  const [isVisible, setIsVisible] = React.useState<boolean>(false);
+  const isLoading = userDetailsLoading || commonPointsLoading;
+  const error = userDetailsError || commonPointsError;
 
-  // Modification de toggleSelection pour limiter à 3 sélections
-  const toggleSelection = (value: string) => {
+  const toggleSelection = (value: number) => {
     setSelectedValues((currentValues) => {
       const isAlreadySelected = currentValues.includes(value);
       if (isAlreadySelected) {
         return currentValues.filter((item) => item !== value);
       } else {
-        // Ajouter la sélection seulement si moins de 3 sont déjà sélectionnés
         return currentValues.length < 3
           ? [...currentValues, value]
           : currentValues;
       }
     });
   };
-  const fetchUserDetails = async () => {
-    if (!userId) return;
+
+  const handleSubmit = async () => {
+    if (!userDetails || selectedValues.length === 0) {
+      Alert.alert("Erreur", "Informations manquantes pour la soumission.");
+      return;
+    }
     try {
-      const response = await fetch(
-        `https://nuit-nws.bastiencouder.com/user/${userId}`
+      const response = await submitCommonPointsSelections(
+        userDetails.id,
+        selectedValues
       );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.ok && user) {
+        await compareUserSelections(user.id, userDetails.id);
+      } else {
+        Alert.alert("Erreur", "La soumission des sélections a échoué.");
       }
-      const data = await response.json();
-      setUserDetails(data);
-      setLoading(false);
     } catch (error) {
-      console.error(error);
-      setError(`Erreur lors du chargement des détails de l'utilisateur.`);
+      console.error("Erreur lors de la soumission: ", error);
+      Alert.alert("Erreur", "Problème lors de la soumission des sélections.");
     }
   };
-
-  const fetchCommonPoints = async () => {
-    try {
-      const response = await fetch(
-        `https://nuit-nws.bastiencouder.com/commonPoint`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setCommonPoints(data);
-    } catch (error) {
-      console.error(error);
-      setError(`Erreur lors du chargement des points communs.`);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchUserDetails();
-    fetchCommonPoints();
-  }, [userId]);
 
   return (
     <View style={styles.container}>
-      {loading ? (
+      {isLoading ? (
         <ActivityIndicator size="large" color={themeColors.primary} />
       ) : error ? (
         <Text style={{ color: themeColors.primary, paddingHorizontal: 20 }}>
@@ -125,7 +123,7 @@ export default function UserScreen() {
               </Text>
             </Pressable>
 
-            {isVisible && !loading && commonPoints.length > 0 && (
+            {isVisible && !isLoading && commonPoints.length > 0 && (
               <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={{ paddingRight: 14 }}
@@ -135,17 +133,17 @@ export default function UserScreen() {
                   <TouchableOpacity
                     key={index}
                     style={styles.option}
-                    onPress={() => toggleSelection(point.contenu)}
+                    onPress={() => toggleSelection(point.id)}
                   >
                     <View
                       style={[
                         styles.checkbox,
-                        selectedValues.includes(point.contenu)
+                        selectedValues.includes(point.id)
                           ? styles.checkboxSelected
                           : styles.checkboxUnselected,
                       ]}
                     >
-                      {selectedValues.includes(point.contenu) && (
+                      {selectedValues.includes(point.id) && (
                         <Text style={styles.checkboxIcon}></Text>
                       )}
                     </View>
@@ -158,15 +156,20 @@ export default function UserScreen() {
             {/* Affichage des sélections en dessous du bouton toggle */}
             {selectedValues.length > 0 && (
               <View style={styles.selectedValuesContainer}>
-                {selectedValues.map((value, index) => (
-                  <Text key={index} style={styles.selectedValue}>
-                    {value}
-                  </Text>
-                ))}
+                {selectedValues.map((selectedValueId, index) => {
+                  const selectedPoint = commonPoints.find(
+                    (point) => point.id === selectedValueId
+                  );
+                  return (
+                    <Text key={index} style={styles.selectedValue}>
+                      {selectedPoint?.contenu}
+                    </Text>
+                  );
+                })}
               </View>
             )}
 
-            <Pressable style={styles.button} onPress={() => {}}>
+            <Pressable style={styles.button} onPress={handleSubmit}>
               <Text style={styles.buttonText}>Valider</Text>
             </Pressable>
           </View>
@@ -256,7 +259,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     fontSize: 12,
     color: themeColors.background,
-    fontFamily:"FiraSansBold"
+    fontFamily: "FiraSansBold",
   },
   toggleButton: {
     padding: 10,
@@ -264,7 +267,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   toggleButtonText: {
-    fontFamily:"FiraSansBold",
+    fontFamily: "FiraSansBold",
     fontSize: 18,
     textAlign: "center",
     color: themeColors.text,
@@ -296,13 +299,12 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     backgroundColor: themeColors.text,
     borderRadius: 15,
-    width:"130%"
+    width: "130%",
   },
   option: {
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-
   },
   optionText: {
     backgroundColor: "#e2e2e2",
@@ -312,6 +314,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     flex: 1,
     fontSize: 12,
-    fontFamily:"FiraSansBold"
+    fontFamily: "FiraSansBold",
   },
 });

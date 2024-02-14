@@ -4,8 +4,7 @@ const router = express.Router();
 
 // User routes
 router.get("/", UserController.readUsers);
-router.get("/:id", UserController.getUserById);
-router.get("/qrcodes", UserController.readQrCodes);
+router.get("/:token", UserController.getUserByToken);
 router.post("/", UserController.createUser);
 
 //swagger
@@ -25,16 +24,16 @@ router.post("/", UserController.createUser);
 // User By Id
 /**
  * @swagger
- * /user/{id}:
+ * /user/{token}:
  *   get:
- *     summary: Récupérer un utilisateur par son ID
+ *     summary: Récupérer un utilisateur par son Token
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: token
  *         schema:
  *           type: integer
  *         required: true
- *         description: ID de l'utilisateur à récupérer
+ *         description: Token de l'utilisateur à récupérer
  *     responses:
  *       200:
  *         description: Utilisateur récupéré avec succès
@@ -84,35 +83,5 @@ router.post("/", UserController.createUser);
  *         description: Erreur interne du serveur
  */
 
-
-//qr codes
-/**
- * @swagger
- * /user/qrcodes:
- *   get:
- *     summary: Récupérer tous les QR codes des utilisateurs
- *     description: Cette route permet de récupérer les noms, prénoms et URLs des QR codes de tous les utilisateurs.
- *     responses:
- *       200:
- *         description: Liste des QR codes récupérée avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   nom:
- *                     type: string
- *                     description: Le nom de l'utilisateur
- *                   prenom:
- *                     type: string
- *                     description: Le prénom de l'utilisateur
- *                   qrCodeUrl:
- *                     type: string
- *                     description: L'URL du QR code de l'utilisateur
- *       500:
- *         description: Erreur interne du serveur
- */
 
 export default router;

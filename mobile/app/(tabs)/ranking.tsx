@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -8,58 +8,37 @@ import {
   View,
 } from "react-native";
 import themeColors from "@/constants/Colors";
-import { Rank, User } from "@/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Rank } from "@/types";
+import useUserDetailsFromStorage from "@/hook/useUserDetailsFromStorage";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { RootState } from "../store";
+import { fetchRanks } from "@/features/RankSlice";
 
 export default function TabRankingScreen() {
-  const [dataRank, setDataRank] = useState<Rank[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userDetails, setUserDetails] = useState<User | null>(null);
-  const [error, setError] = useState("");
+  const dispatch = useAppDispatch();
+  const { ranks, loading: loadingRank, error } = useAppSelector((state: RootState) => state.ranks);
 
-  const fetchData = async () => {
-    try {
-      const resp = await fetch("https://nuit-nws.bastiencouder.com/rank");
-      const data = await resp.json();
-      setDataRank(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  React.useEffect(() => {
+    dispatch(fetchRanks());
+  }, [dispatch]);
 
-  const loadUserDetailsFromStorage = async () => {
-    setLoading(true);
-    try {
-      const storedUserDetails = await AsyncStorage.getItem("userDetails");
-      if (storedUserDetails) {
-        setUserDetails(JSON.parse(storedUserDetails));
-      } else {
-        setUserDetails(null);
-        setError("Aucun détail d'utilisateur trouvé.");
-      }
-    } catch (err) {
-      setError("Erreur lors de la récupération des détails de l'utilisateur.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    userDetails,
+    loading: loadingUserDetails,
+  } = useUserDetailsFromStorage();
 
-  useEffect(() => {
-    fetchData();
-    loadUserDetailsFromStorage();
-  }, [setLoading]);
+  const isLoading = loadingRank || loadingUserDetails;
 
-  const userRank = dataRank.find((rank) => rank.user.id === userDetails?.id);
+  const userRank = ranks.find(
+    (rank: Rank) => rank.user.id === userDetails?.id
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-      <Image
+        <Image
           source={require("@/assets/images/rank.svg")}
-          style={{width:80, height: 80,objectFit:"contain" }}
+          style={{ width: 80, height: 80, objectFit: "contain" }}
         />
         <Text
           style={{
@@ -71,12 +50,15 @@ export default function TabRankingScreen() {
           Classement
         </Text>
 
-        {loading ? (
-          <ActivityIndicator size="large" color={themeColors.primary} />
-        ) : dataRank.length > 0 && userDetails && userRank ? (
+        {isLoading ? (
+          <ActivityIndicator
+            size="large"
+            color={themeColors.primary}
+          />
+        ) : ranks.length > 0 && userDetails && userRank ? (
           <View style={{ gap: 20 }}>
             <FlatList
-              data={dataRank.slice(0, 3)}
+              data={ranks.slice(0, 3)}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <View style={styles.rankingItem}>
@@ -103,10 +85,6 @@ export default function TabRankingScreen() {
           </Text>
         )}
       </View>
-      <Image
-          source={require("@/assets/images/podium.svg")}
-          style={{ marginTop: 20 }}
-        />
     </View>
   );
 }
@@ -119,12 +97,13 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     color: themeColors.text,
     backgroundColor: themeColors.background,
+    paddingBottom: 55,
   },
   card: {
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    gap:5,
+    gap: 5,
     width: "80%",
     borderColor: themeColors.primary,
     borderWidth: 2,

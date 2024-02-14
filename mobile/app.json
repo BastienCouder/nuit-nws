@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "nuit-nws",
+    "name": "client",
+    "slug": "client",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,39 +12,22 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "LogoImage": {
-      "image": "./assets/images/Logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSCameraUsageDescription": "Cette application utilise la caméra pour scanner des QR codes.",
-        "NSMicrophoneUsageDescription": "Cette application utilise le micro pour enregistrer de l'audio."
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "CAMERA",
-        "RECORD_AUDIO",
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ]
+      }
     },
     "web": {
+      "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.svg"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-camera",
         {
@@ -53,17 +36,7 @@
       ]
     ],
     "experiments": {
-      "typedRoutes":false
-    },
-    
-    "extra": {
-      "router": {
-        "origin":false
-      },
-      "eas": {
-        "projectId": "83b9738a-17f8-4df3-8966-229513bf0c42"
-      }
-    },
-    "owner": "bastien.cdr"
+      "typedRoutes": true
+    }
   }
 }

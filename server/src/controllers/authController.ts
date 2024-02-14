@@ -85,8 +85,25 @@ const generateSessionToken = async (user: User) => {
 };
 
 
+export const   getQrCodes = async (req: Request, res: Response) => {
+  try {
+      const users = await prisma.user.findMany({
+          select: {
+              nom: true,
+              prenom: true,
+              qrCodeUrl: true,
+          }
+      });
+      res.status(200).json(users);
+  } catch (error) {
+      console.error("Erreur lors de la récupération des utilisateurs :", error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+}
+
 const authController = {
   loginWithQR,
+  getQrCodes
 };
 
 export { authController };

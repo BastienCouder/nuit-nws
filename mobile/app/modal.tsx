@@ -9,7 +9,7 @@ import {
 import { Link } from "expo-router";
 import themeColors from "@/constants/Colors";
 
-const HowToPlayScreen = () => {
+export default function ModalScreen() {
   return (
     <View style={styles.container}>
       <Image source={require("@/assets/images/logo-help.svg")} style={{width:320,height:80,objectFit:"contain"}}/>
@@ -26,14 +26,14 @@ const HowToPlayScreen = () => {
         <Text>Trouvez</Text>
         <Text>Gagnez !</Text>
       </Text>
-      <Link href={"/(app)/(tabs)/"} asChild>
+      <Link href={"/"} asChild>
         <Pressable>
           <Text style={styles.buttonText}>C'est parti !</Text>
         </Pressable>
       </Link>
     </View>
   );
-};
+}
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -67,12 +67,11 @@ const styles = StyleSheet.create({
     fontFamily: "FugazOne",
     fontSize: 24,
     textAlign: "center",
-    paddingHorizontal: screenWidth * 0.1,
+    paddingHorizontal: 40,
     paddingVertical: 10,
     backgroundColor: themeColors.secondary,
     borderRadius: 10,
+    width:"100%",
     overflow: "hidden",
   },
 });
-
-export default HowToPlayScreen;
