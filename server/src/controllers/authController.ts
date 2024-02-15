@@ -28,6 +28,7 @@ export const loginWithQR = async (req: Request, res: Response) => {
 
     // Si une nouvelle session a été créée, renvoyez la réponse avec le nouveau token
     const userResponse = {
+      id:user.id,
       nom: user.nom,
       prenom: user.prenom,
       email: user.email,
