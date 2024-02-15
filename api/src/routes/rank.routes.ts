@@ -10,7 +10,7 @@ router.get("/:id", RankController.readUserRank);
 // Create Rank
 /**
  * @swagger
- * /rank/:
+ * /api/rank/:
  *   post:
  *     summary: Créer un classement pour un utilisateur
  *     requestBody:
@@ -34,7 +34,7 @@ router.get("/:id", RankController.readUserRank);
 // Get All Rankings
 /**
  * @swagger
- * /rank/:
+ * /api/rank/:
  *   get:
  *     summary: Récupérer tous les classements
  *     responses:
@@ -47,7 +47,7 @@ router.get("/:id", RankController.readUserRank);
 // Get User Rank
 /**
  * @swagger
- * /rank/{id}:
+ * /api/rank/{id}:
  *   get:
  *     summary: Récupérer le classement d'un utilisateur spécifique
  *     parameters:

@@ -43,19 +43,23 @@ app.use(cors({
   credentials: true, // Permet les requêtes avec des credentials (cookies, données d'authentification, etc.)
 }));
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/api", (req: Request, res: Response) => {
     res.send('Express + TypeScript Server. /api-docs pour acceder à la documentation');
   });
   
+
+
 // Utilisation des routes
-app.use("/user", userRoutes);
-app.use("/rank", rankRoutes);
-app.use("/auth", authRoutes);
-app.use("/selectUser", selectUserRoutes);
-app.use("/commonPoint", commonPointRoutes);
+
+
+app.use("/api/user", userRoutes);
+app.use("/api/rank", rankRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/selectUser", selectUserRoutes);
+app.use("/api/commonPoint", commonPointRoutes);
 
 // Route pour la documentation Swagger
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Lancement du serveur
 const PORT = process.env.PORT || 5000;

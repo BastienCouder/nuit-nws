@@ -8,7 +8,7 @@ router.get('/compare/:userId1/:userId2', selectUserController.compareSelectUser)
 
 /**
  * @swagger
- * /selectUser/{userId}:
+ * /api/selectUser/{userId}:
  *   post:
  *     summary: Créer des sélections de points communs pour un utilisateur
  *     description: Permet de créer jusqu'à trois sélections de points communs pour un utilisateur donné.
@@ -44,7 +44,7 @@ router.get('/compare/:userId1/:userId2', selectUserController.compareSelectUser)
 
 /**
  * @swagger
- * /selectUser/compare/{userId1}/{userId2}:
+ * /api/selectUser/compare/{userId1}/{userId2}:
  *   get:
  *     summary: Comparer les sélections de points communs entre deux utilisateurs
  *     description: Permet de trouver les points communs sélectionnés par deux utilisateurs donnés.

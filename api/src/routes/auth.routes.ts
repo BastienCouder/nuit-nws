@@ -9,7 +9,7 @@ router.get("/qrcodes", authController.getQrCodes);
 
 /**
  * @swagger
- * /auth/login/qr:
+ * /api/auth/login/qr:
  *   post:
  *     summary: Se connecter avec un QR code
  *     description: Permet à un utilisateur de se connecter en utilisant un QR code.
@@ -68,7 +68,7 @@ router.get("/qrcodes", authController.getQrCodes);
 //qr codes
 /**
  * @swagger
- * /auth/qrcodes:
+ * /api/auth/qrcodes:
  *   get:
  *     summary: Récupérer tous les QR codes des utilisateurs
  *     description: Cette route permet de récupérer les noms, prénoms et URLs des QR codes de tous les utilisateurs.

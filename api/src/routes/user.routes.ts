@@ -11,7 +11,7 @@ router.post("/", UserController.createUser);
 //read all users
 /**
  * @swagger
- * /user/:
+ * /api/user/:
  *   get:
  *     summary: Récupérer tous les utilisateurs
  *     responses:
@@ -24,7 +24,7 @@ router.post("/", UserController.createUser);
 // User By Id
 /**
  * @swagger
- * /user/{token}:
+ * /api/user/{token}:
  *   get:
  *     summary: Récupérer un utilisateur par son Token
  *     parameters:
@@ -51,7 +51,7 @@ router.post("/", UserController.createUser);
 // create user
 /**
  * @swagger
- * /user/:
+ * /api/user/:
  *   post:
  *     summary: Créer un nouvel utilisateur
  *     requestBody:
