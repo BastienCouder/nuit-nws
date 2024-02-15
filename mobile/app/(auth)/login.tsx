@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import themeColors from "@/constants/Colors";
 import QRCodeScanner from "@/components/QrcodeScanner";
+import { useAppDispatch } from "../hooks";
+import { authenticateUser } from "@/features/AuthSlice";
 
 export default function LoginScreen() {
   const [isScanning, setIsScanning] = useState(false);
@@ -12,6 +14,22 @@ export default function LoginScreen() {
 
   const handleQRCodeScan = () => {
     setIsScanning(true);
+  };
+
+  const dispatch = useAppDispatch();
+
+  const handleLogin = () => {
+      // Simulez un token QR pour l'exemple. Remplacez par le token réel obtenu via QR.
+      const qrToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvdWRlcmJhc3RpZW5AZ21haWwuY29tIiwiaWF0IjoxNzA3MTY2NzQzLCJleHAiOjE3Mzg3MDI3NDN9.USIpd8UmP2Y2XtyiaEstjJRg_DovhbTgSJglGdqg8jw';
+
+      dispatch(authenticateUser(qrToken))
+          .unwrap()
+          .then((authState) => {
+              Alert.alert("Succès", "Connexion réussie !");
+          })
+          .catch((error) => {
+              Alert.alert("Erreur", `Connexion échouée: ${error}`);
+          });
   };
 
   return (
@@ -39,6 +57,30 @@ export default function LoginScreen() {
           >
             <Pressable
               onPress={handleQRCodeScan}
+              style={({ pressed }) => [
+                styles.button,
+                {
+                  opacity: pressed ? 0.5 : 1,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontFamily: "FugazOne",
+                  fontSize: 20,
+                  textAlign: "center",
+                  color: themeColors.text,
+                }}
+              >
+                Connexion
+              </Text>
+            </Pressable>
+          </View>
+          <View
+            style={{ backgroundColor: "blue", borderRadius: 10, width: "80%" }}
+          >
+            <Pressable
+              onPress={handleLogin}
               style={({ pressed }) => [
                 styles.button,
                 {

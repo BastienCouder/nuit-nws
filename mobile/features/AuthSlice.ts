@@ -2,6 +2,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User } from '@/types'; // Assurez-vous que ce type est bien défini
+import { router } from 'expo-router';
 
 interface AuthState {
     isAuthenticated: boolean;
@@ -37,6 +38,7 @@ export const authenticateUser = createAsyncThunk<AuthState, string, { rejectValu
             // Stocker les détails de l'utilisateur et le token dans AsyncStorage
             await AsyncStorage.setItem('userDetails', JSON.stringify(data.user));
             await AsyncStorage.setItem('userToken', JSON.stringify(data.token));
+            router.replace("/modal");
             return data;
         } catch (error: any) {
             return rejectWithValue(error.toString());
@@ -56,6 +58,12 @@ const authSlice = createSlice({
             AsyncStorage.removeItem('userDetails');
             AsyncStorage.removeItem('userToken');
         },
+        initAuth: (state, action: PayloadAction<{ user: User; token: string }>) => {
+            const { user, token } = action.payload;
+            state.user = user;
+            state.token = token;
+            state.isAuthenticated = !!token;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -73,5 +81,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout,initAuth } = authSlice.actions;
 export default authSlice.reducer;

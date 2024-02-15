@@ -1,34 +1,23 @@
-import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User } from '@/types';
+// useLoadAuthState.js ou useLoadAuthState.ts
+import { useEffect } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from 'react-redux';
+import { initAuth } from '@/features/AuthSlice'; // Ajustez le chemin d'importation selon votre structure de projet
 
-const useUserDetailsFromStorage = () => {
-  const [userDetails, setUserDetails] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+export const useLoadAuthState = () => {
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const loadUserDetails = async () => {
-      try {
-        const storedUserDetails = await AsyncStorage.getItem("userDetails");
-        if (storedUserDetails) {
-          setUserDetails(JSON.parse(storedUserDetails));
-        } else {
-          setUserDetails(null);
-          setError("Aucun détail d'utilisateur trouvé.");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Erreur lors de la récupération des détails de l'utilisateur.");
-      } finally {
-        setLoading(false);
+    const loadAuthState = async () => {
+      const userDetailsString = await AsyncStorage.getItem('userDetails');
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (userDetailsString && userToken) {
+        const userDetails = JSON.parse(userDetailsString);
+        // Dispatch de l'action initAuth avec le payload correct
+        dispatch(initAuth({ user: userDetails, token: userToken }));
       }
     };
 
-    loadUserDetails();
-  }, []);
-
-  return { userDetails, loading, error };
+    loadAuthState();
+  }, [dispatch]);
 };
-
-export default useUserDetailsFromStorage;

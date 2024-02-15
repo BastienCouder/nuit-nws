@@ -39,11 +39,6 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         >
           Profil
         </Text>
-        {/* <CameraView
-        style={styles.camera}
-        type={facing}
-        onBarcodeScanned={handleBarCodeScanned}
-      /> */}
         <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/>
       </View>
       <Text style={styles.info}>

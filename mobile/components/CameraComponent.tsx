@@ -1,71 +1,71 @@
-import React, { useState } from 'react';
-import { RNCamera } from 'react-native-camera';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Html5Qrcode } from 'html5-qrcode';
+import themeColors from '@/constants/Colors';
 
 interface CameraComponentProps {
-  handleBarCodeScanned?: (scanResult: any) => void; // Ajustez selon le type approprié
+  handleBarCodeScanned?: ({ type, data }: { type: string; data: string; }) => Promise<void>;
 }
 
 const CameraComponent: React.FC<CameraComponentProps> = ({ handleBarCodeScanned }) => {
-  // Utilisation directe de RNCamera.Constants pour accéder à Type et FlashMode
-  // const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
+  const qrScannerRef = useRef<HTMLDivElement>(null);
 
-  // const toggleCameraType = () => {
-  //   setCameraType((prevCameraType: any) =>
-  //     prevCameraType === RNCamera.Constants.Type.back
-  //       ? RNCamera.Constants.Type.front
-  //       : RNCamera.Constants.Type.back,
-  //   );
-  // };
+  useEffect(() => {
+    let html5QrcodeScanner: Html5Qrcode;
 
+    const initializeScanner = async () => {
+      if (qrScannerRef.current) {
+        html5QrcodeScanner = new Html5Qrcode(qrScannerRef.current.id);
 
+        const config = {
+          fps: 40,
+          qrbox: { width: 250, height: 250 },
+        };
+        const cameraConfig = {
+          facingMode: "environment",
+        };
+
+        const qrCodeSuccessCallback = (decodedText: string, decodedResult: any) => {
+          console.log(`QR Code detected: ${decodedText}`, decodedResult);
+          handleBarCodeScanned && handleBarCodeScanned({ type: decodedResult.result.format, data: decodedText });
+        };
+
+        const qrCodeErrorCallback = (errorMessage: string) => {
+          console.log(`QR Code scanning error: ${errorMessage}`);
+        };
+
+        try {
+          await html5QrcodeScanner.start(cameraConfig, config, qrCodeSuccessCallback, qrCodeErrorCallback);
+        } catch (err) {
+          console.log(`Unable to start QR Scanning: ${err}`);
+        }
+      }
+    };
+
+    setTimeout(() => {
+      initializeScanner();
+    }, 500); 
+    
+    return () => {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+          console.log("QR Scanning stopped.");
+        }).catch(err => console.log(`Unable to stop QR Scanning: ${err}`));
+      }
+    };
+  }, [handleBarCodeScanned]);
 
   return (
     <View style={styles.container}>
-      {/* <RNCamera
-        style={styles.camera}
-        type={cameraType}
-        flashMode={RNCamera.Constants.FlashMode.auto}
-        onBarCodeRead={handleBarCodeScanned}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-            <Text style={styles.text}>Flip</Text>
-          </TouchableOpacity>
-        </View>
-      </RNCamera> */}
+      <div id="qr-reader" ref={qrScannerRef} style={{ width: '250px', height: '100%' }}></div>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'black',
-  },
-  camera: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  buttonContainer: {
-    flex: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  button: {
-    flex: 0,
-    padding: 10,
-    paddingHorizontal: 20,
-    alignSelf: 'center',
-    margin: 20,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-  },
-  text: {
-    fontSize: 18,
-    color: 'black',
+    backgroundColor: themeColors.background,
   },
 });
 

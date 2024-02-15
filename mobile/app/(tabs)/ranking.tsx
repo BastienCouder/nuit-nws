@@ -9,36 +9,41 @@ import {
 } from "react-native";
 import themeColors from "@/constants/Colors";
 import { Rank } from "@/types";
-import useUserDetailsFromStorage from "@/hook/useUserDetailsFromStorage";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { RootState } from "../store";
 import { fetchRanks } from "@/features/RankSlice";
+import { useLoadAuthState } from "@/hook/useUserDetailsFromStorage";
 
 export default function TabRankingScreen() {
   const dispatch = useAppDispatch();
-  const { ranks, loading: loadingRank, error } = useAppSelector((state: RootState) => state.ranks);
+  const {
+    ranks,
+    loading: loadingRank,
+    error,
+  } = useAppSelector((state: RootState) => state.ranks);
+
+  const { user: userDetails, loading: loadingUserDetails } = useAppSelector(
+    (state: RootState) => state.auth
+  );
+console.log(userDetails);
 
   React.useEffect(() => {
     dispatch(fetchRanks());
   }, [dispatch]);
 
-  const {
-    userDetails,
-    loading: loadingUserDetails,
-  } = useUserDetailsFromStorage();
+  useLoadAuthState();
 
   const isLoading = loadingRank || loadingUserDetails;
 
-  const userRank = ranks.find(
-    (rank: Rank) => rank.user.id === userDetails?.id
-  );
+  const userRank = ranks.find((rank: Rank) => rank.user.id === userDetails?.id);
+console.log(userDetails?.id);
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Image
           source={require("@/assets/images/rank.svg")}
-          style={{ width: 80, height: 80, objectFit: "contain" }}
+          style={{ width: 80, height: 80, resizeMode: "contain" }}
         />
         <Text
           style={{
@@ -51,11 +56,10 @@ export default function TabRankingScreen() {
         </Text>
 
         {isLoading ? (
-          <ActivityIndicator
-            size="large"
-            color={themeColors.primary}
-          />
-        ) : ranks.length > 0 && userDetails && userRank ? (
+          <ActivityIndicator size="large" color={themeColors.primary} />
+        ) : error ? (
+          <Text style={styles.error}>Erreur: {error}</Text>
+        ) : (
           <View style={{ gap: 20 }}>
             <FlatList
               data={ranks.slice(0, 3)}
@@ -74,15 +78,11 @@ export default function TabRankingScreen() {
             />
             <View style={styles.rankingYourItem}>
               <Text style={styles.rankingTextPosition}>
-                {userRank.position}
+                {userRank?.position}
               </Text>
               <Text style={styles.rankingTextYourName}>vous</Text>
             </View>
           </View>
-        ) : (
-          <Text style={{ color: themeColors.primary, paddingHorizontal: 20 }}>
-            Aucun classement pour le moment.
-          </Text>
         )}
       </View>
     </View>
@@ -110,6 +110,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: themeColors.background,
     maxWidth: 450,
+  },
+  error: {
+    color: themeColors.primary,
+    fontFamily: "FiraSans",
+    paddingHorizontal: 20,
   },
   rankingItem: {
     paddingHorizontal: 20,

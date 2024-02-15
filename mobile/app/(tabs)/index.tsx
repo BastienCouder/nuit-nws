@@ -7,13 +7,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 import themeColors from "@/constants/Colors";
+import  {initAuth } from '@/features/AuthSlice';
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { RootState } from "../store";
-import { logout } from "@/features/AuthSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLoadAuthState } from "@/hook/useUserDetailsFromStorage";
 
 export default function TabOneScreen() {
   const { user, loading, error } = useAppSelector((state: RootState) => state.auth);
-  const dispatch = useAppDispatch();
+  useLoadAuthState();
 
   return (
     <View style={styles.container}>
@@ -21,20 +23,32 @@ export default function TabOneScreen() {
         <ActivityIndicator size="large" color={themeColors.primary} />
       ) : error ? (
         <Text style={styles.error}>Erreur: {error}</Text>
-      ) : user ? (
+      ) : (
         <View style={styles.card}>
           <Text style={styles.title}>Profil</Text>
-          <Text style={styles.detailItem}>Prénom: {user.prenom}</Text>
-          <Text style={styles.detailItem}>Nom: {user.nom}</Text>
-          <Text style={styles.detailItem}>Entreprise: {user.entreprise}</Text>
-          <Text style={styles.detailItem}>Poste: {user.poste}</Text>
-          {/* Ici, vous pouvez ajouter plus de détails si nécessaire */}
-          <Text style={styles.score}>
-            Score: {user.score} {user.score > 1 ? "points" : "point"}
+          <View style={styles.details}>
+          <Text style={styles.detailItem}>{user?.prenom}</Text>
+          <Text style={styles.detailItem}>{user?.nom}</Text>
+          <Text style={styles.detailItem}>{user?.entreprise}</Text>
+          <Text style={styles.detailItem}>{user?.poste}</Text>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.score}>
+          <Text style={{
+            fontFamily: "FugazOne",
+            fontSize: 25,
+            color: themeColors.background,
+          }}>Score</Text>
+          <Text style={{
+            fontFamily: "FugazOne",
+            fontSize: 20,
+            color: themeColors.background,
+          }}>
+            {user?.score} {user && user?.score > 1 ? "points" : "point"}
           </Text>
         </View>
-      ) : (
-        <Text style={styles.error}>Aucun détail d'utilisateur trouvé.</Text>
+        </View>
+   
       )}
       {/* <Pressable style={styles.button} onPress={() => dispatch(logout())}>
         <Text style={styles.buttonText}>Déconnexion</Text>

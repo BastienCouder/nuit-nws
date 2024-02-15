@@ -15,7 +15,6 @@ import {
   compareUserSelections,
   submitCommonPointsSelections,
 } from "@/features/commonPointsSelection";
-import useUserDetailsFromStorage from "@/hook/useUserDetailsFromStorage";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { RootState } from "@/app/store";
 import { fetchUserDetails } from "@/features/UserSlice";
@@ -25,16 +24,20 @@ export default function UserScreen() {
   const { token } = useLocalSearchParams();
   const dispatch = useAppDispatch();
 
-  const {
-    userDetails: user,
-    loading: loadingUserDetails,
-    error: errorUserDetails,
-  } = useUserDetailsFromStorage();
+  const { user } = useAppSelector((state: RootState) => state.auth);
 
-  const { userDetails, loading:userDetailsLoading , error: userDetailsError  } = useAppSelector((state: RootState) => state.user);
- const { commonPoints, loading: commonPointsLoading, error:commonPointsError } = useAppSelector((state: RootState) => state.commonPoints);
- 
- React.useEffect(() => {
+  const {
+    userDetails,
+    loading: userDetailsLoading,
+    error: userDetailsError,
+  } = useAppSelector((state: RootState) => state.user);
+  const {
+    commonPoints,
+    loading: commonPointsLoading,
+    error: commonPointsError,
+  } = useAppSelector((state: RootState) => state.commonPoints);
+
+  React.useEffect(() => {
     if (token) {
       dispatch(fetchUserDetails(String(token)));
     }

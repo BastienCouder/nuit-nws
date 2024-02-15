@@ -1,9 +1,21 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Link } from "expo-router";
+import { StyleSheet, Text,  View } from "react-native";
+import { Link, useRouter } from "expo-router";
 import themeColors from "@/constants/Colors";
 import CameraComponent from "@/components/CameraComponent";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { useCallback } from "react";
 
 export default function TabScanScreen() {
+  const dispatch = useAppDispatch();
+ 
+  const router = useRouter();
+
+  const handleBarCodeScanned = useCallback(async ({ data }: { data: string }) => {
+    router.push(`/user/${data}`);
+  }, [router]);
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -16,7 +28,7 @@ export default function TabScanScreen() {
         >
           Profil
         </Text>
-        <CameraComponent />
+        <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/>
         <Link
           href={
             {
