@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import themeColors from "@/constants/Colors";
-import CameraComponent from "@/components/QrcodeScanner";
 import { useAppDispatch } from "../hooks";
 import { authenticateUser } from "@/features/AuthSlice";
+import QRCodeScanner from "@/components/QrcodeScanner";
 
 export default function LoginScreen() {
   const [isScanning, setIsScanning] = useState(false);
@@ -42,7 +42,7 @@ export default function LoginScreen() {
               style={{ marginTop: 20 }}
             />
           </Pressable>
-          <CameraComponent
+          <QRCodeScanner
             onDone={() => setIsScanning(false)}
           />
         </>

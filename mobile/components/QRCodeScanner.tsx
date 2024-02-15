@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import {  useCallback } from "react";
 import { StyleSheet, Alert, View, TouchableOpacity, Text } from "react-native";
 
 import CameraComponent from "./CameraComponent";
