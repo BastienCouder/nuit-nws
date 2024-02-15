@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Html5Qrcode } from 'html5-qrcode';
-import themeColors from '../constants/Colors';
+import themeColors from '@/constants/Colors';
 
 interface CameraComponentProps {
   handleBarCodeScanned?: ({ type, data }: { type: string; data: string; }) => Promise<void>;
 }
 
-const CameraComponent: React.FC<CameraComponentProps> = ({ handleBarCodeScanned }) => {
+export default function CameraComponent({ handleBarCodeScanned }:CameraComponentProps)  {
   const qrScannerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,4 +69,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CameraComponent;

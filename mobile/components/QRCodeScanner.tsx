@@ -1,6 +1,5 @@
-import {  useCallback } from "react";
+import { useCallback } from "react";
 import { StyleSheet, Alert, View, TouchableOpacity, Text } from "react-native";
-
 import CameraComponent from "./CameraComponent";
 import themeColors from "@/constants/Colors";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
@@ -11,11 +10,11 @@ interface QRCodeScannerProps {
   onDone: () => void;
 }
 
-const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
-  onDone,
-}) => {
+export default function QRCodeScanner({ onDone }: QRCodeScannerProps) {
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useAppSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   const handleBarCodeScanned = useCallback(
     async ({ type, data }: { type: string; data: string }) => {
@@ -25,7 +24,6 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     },
     [dispatch, isAuthenticated, onDone]
   );
-
 
   return (
     <View style={styles.container}>
@@ -39,16 +37,12 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         >
           Profil
         </Text>
-        <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/>
+        <CameraComponent handleBarCodeScanned={handleBarCodeScanned} />
       </View>
-      <Text style={styles.info}>
-        Scannez votre QR Code pour participer
-      </Text>
+      <Text style={styles.info}>Scannez votre QR Code pour participer</Text>
     </View>
   );
-};
-
-export default QRCodeScanner;
+}
 
 const styles = StyleSheet.create({
   title: {
@@ -60,13 +54,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
-    marginTop:-60
+    marginTop: -60,
   },
   card: {
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    gap:20,
+    gap: 20,
     width: "80%",
     borderColor: themeColors.primary,
     borderWidth: 2,
@@ -89,6 +83,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: themeColors.text,
     paddingHorizontal: 20,
-    fontFamily: "FiraSansBold"
+    fontFamily: "FiraSansBold",
   },
 });
