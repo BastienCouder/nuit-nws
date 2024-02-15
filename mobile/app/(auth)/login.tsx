@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import themeColors from "@/constants/Colors";
-import QRCodeScanner from "@/components/QrcodeScanner";
+import QRCodeScanner from "../../components/QrcodeScanner";
 import { useAppDispatch } from "../hooks";
 import { authenticateUser } from "@/features/AuthSlice";
 

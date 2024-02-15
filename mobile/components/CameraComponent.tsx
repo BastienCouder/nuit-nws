@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Html5Qrcode } from 'html5-qrcode';
-import themeColors from '@/constants/Colors';
+import themeColors from '../constants/Colors';
 
 interface CameraComponentProps {
   handleBarCodeScanned?: ({ type, data }: { type: string; data: string; }) => Promise<void>;
@@ -45,7 +45,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ handleBarCodeScanned 
     setTimeout(() => {
       initializeScanner();
     }, 500); 
-    
+
     return () => {
       if (html5QrcodeScanner) {
         html5QrcodeScanner.stop().then(() => {
