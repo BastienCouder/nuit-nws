@@ -19,7 +19,7 @@ export default function CameraComponent({ handleBarCodeScanned }:CameraComponent
 
         const config = {
           fps: 40,
-          qrbox: { width: 250, height: 200 },
+          qrbox: { width: 250, height: 150 },
         };
         const cameraConfig = {
           facingMode: "environment",
