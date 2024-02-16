@@ -29,16 +29,6 @@ export default function TabScanScreen() {
           Profil
         </Text>
         <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/>
-        <Link
-          href={
-            {
-              pathname: "user/[userId]",
-              params: { userId: 4 },
-            } as never
-          }
-        >
-          <Text>Voir Profil</Text>
-        </Link>
       </View>
       <Text style={styles.info}>Scannez le QR Code d'une personne</Text>
     </View>

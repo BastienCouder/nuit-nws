@@ -57,7 +57,7 @@ export default function CameraComponent({ handleBarCodeScanned }:CameraComponent
 
   return (
     <View style={styles.container}>
-      <div id="qr-reader" ref={qrScannerRef} style={{ width: '250px', height: '100%' }}></div>
+      <div id="qr-reader" ref={qrScannerRef} style={{ width: '250px', height: '280px' }}></div>
     </View>
   );
 };
