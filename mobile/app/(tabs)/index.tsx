@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: themeColors.background,
     maxWidth: 450,
-    maxHeight:200
   },
   error: {
     color: themeColors.primary,
