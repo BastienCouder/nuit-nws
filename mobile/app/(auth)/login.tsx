@@ -79,7 +79,7 @@ export default function LoginScreen() {
           <View
             style={{ backgroundColor: "blue", borderRadius: 10, width: "80%" }}
           >
-            <Pressable
+            {/* <Pressable
               onPress={handleLogin}
               style={({ pressed }) => [
                 styles.button,
@@ -98,7 +98,7 @@ export default function LoginScreen() {
               >
                 Connexion
               </Text>
-            </Pressable>
+            </Pressable> */}
           </View>
           <Text
             style={[
