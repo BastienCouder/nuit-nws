@@ -19,7 +19,7 @@ export default function CameraComponent({ handleBarCodeScanned }:CameraComponent
 
         const config = {
           fps: 40,
-          qrbox: { width: 250, height: 250 },
+          qrbox: { width: 250, height: 200 },
         };
         const cameraConfig = {
           facingMode: "environment",
@@ -57,7 +57,7 @@ export default function CameraComponent({ handleBarCodeScanned }:CameraComponent
 
   return (
     <View style={styles.container}>
-      <div id="qr-reader" ref={qrScannerRef} style={{ width: '250px', height: '280px' }}></div>
+      <div id="qr-reader" ref={qrScannerRef} style={{ width: '250px', height: '100%' }}></div>
     </View>
   );
 };
