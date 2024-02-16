@@ -134,6 +134,6 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: themeColors.secondary,
     borderRadius: 10,
-    paddingVertical: 20,
+    paddingTop: 20,
   },
 });
