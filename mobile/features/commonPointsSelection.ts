@@ -1,6 +1,6 @@
+import { API_URL } from "@/lib/utils";
 import { Alert } from "react-native";
 
-const API_URL = "https://nuit-nws.bastiencouder.com";
 
 interface CommonPointSelectionResponse {
   commonContents: string[];

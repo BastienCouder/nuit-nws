@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Rank } from '@/types';
+import { API_URL } from '@/lib/utils';
 
 interface RankState {
   ranks: Rank[];
@@ -17,7 +18,7 @@ export const fetchRanks = createAsyncThunk(
   'ranks/fetch',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`https://nuit-nws.bastiencouder.com/rank`);
+      const response = await fetch(`${API_URL}/rank`);
       if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
       return await response.json();
     } catch (error) {

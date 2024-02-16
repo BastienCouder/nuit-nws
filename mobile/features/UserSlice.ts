@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { User } from '@/types';
+import { API_URL } from '@/lib/utils';
 
 interface UserState {
   userDetails: User | null;
@@ -18,7 +19,7 @@ export const fetchUserDetails = createAsyncThunk(
   'user/fetchDetails',
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`https://nuit-nws.bastiencouder.com/user/${token}`);
+      const response = await fetch(`${API_URL}/user/${token}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       return data;

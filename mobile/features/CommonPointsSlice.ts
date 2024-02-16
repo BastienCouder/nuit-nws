@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { CommonPoint } from '@/types';
+import { API_URL } from '@/lib/utils';
 
 interface CommonPointsState {
   commonPoints: CommonPoint[];
@@ -17,7 +18,7 @@ export const fetchCommonPoints = createAsyncThunk(
   'commonPoints/fetch',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`https://nuit-nws.bastiencouder.com/commonPoint`);
+      const response = await fetch(`${API_URL}/commonPoint`);
       if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
       return await response.json();
     } catch (error) {

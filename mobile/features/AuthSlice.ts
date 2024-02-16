@@ -3,6 +3,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User } from '@/types'; // Assurez-vous que ce type est bien défini
 import { router } from 'expo-router';
+import { API_URL } from '@/lib/utils';
+
 
 interface AuthState {
     isAuthenticated: boolean;
@@ -24,7 +26,7 @@ export const authenticateUser = createAsyncThunk<AuthState, string, { rejectValu
     'auth/authenticateUser',
     async (qrToken, { rejectWithValue }) => {
         try {
-            const response = await fetch(`https://nuit-nws.bastiencouder.com/auth/login/qr`, {
+            const response = await fetch(`${API_URL}/auth/login/qr`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ qrToken }),

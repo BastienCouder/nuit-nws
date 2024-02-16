@@ -1,3 +1,4 @@
+import { API_URL } from '@/lib/utils';
 import { User } from '@/types';
 import { useState, useEffect } from 'react';
 
@@ -10,7 +11,7 @@ const useFetchUserDetails = (token:string) => {
     const fetchUserDetails = async () => {
       if (!token) return;
       try {
-        const response = await fetch(`https://nuit-nws.bastiencouder.com/user/${token}`);
+        const response = await fetch(`${API_URL}/user/${token}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setUserDetails(data);

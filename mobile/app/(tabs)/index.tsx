@@ -7,10 +7,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import themeColors from "@/constants/Colors";
-import  {initAuth } from '@/features/AuthSlice';
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppSelector } from "../hooks";
 import { RootState } from "../store";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLoadAuthState } from "@/hook/useUserDetailsFromStorage";
 
 export default function TabOneScreen() {
