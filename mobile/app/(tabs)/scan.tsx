@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap:20,
     backgroundColor: themeColors.background,
+    maxHeight:200
   },
   camera: {
     width: 250,
