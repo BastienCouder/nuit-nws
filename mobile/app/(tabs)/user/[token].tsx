@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import * as React from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import themeColors from "@/constants/Colors";
 import {
   compareUserSelections,
@@ -23,6 +23,7 @@ import { fetchCommonPoints } from "@/features/CommonPointsSlice";
 export default function UserScreen() {
   const { token } = useLocalSearchParams();
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const { user } = useAppSelector((state: RootState) => state.auth);
 
@@ -88,8 +89,6 @@ export default function UserScreen() {
       console.error("Erreur lors de la soumission: ", error);
       Alert.alert("Erreur", "Problème lors de la soumission des sélections.");
     } finally {
-      // Essayez de rediriger l'utilisateur indépendamment du succès ou de l'échec
-      // Assurez-vous que la route cible ("/") est correctement configurée
       try {
         router.replace("/");
       } catch (navigationError) {
