@@ -1,10 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { RootState } from "@/app/store";
 import { API_URL } from "@/lib/utils";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
 import { Alert } from "react-native";
-import { fetchAndUpdateUserData } from "./AuthSlice";
 
 interface CommonPointSelectionResponse {
   commonContents: string[];
@@ -34,7 +31,6 @@ export const submitCommonPointsSelections = async (
         errorData.error || "Erreur lors de la soumission des sélections."
       );
     }
-    router.replace("/");
     return response;
   } catch (error: any) {
     console.error("Erreur lors de la soumission:", error.message);
