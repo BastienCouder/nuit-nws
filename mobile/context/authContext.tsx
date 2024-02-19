@@ -29,8 +29,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const [rootSegment] = useSegments(); // Mise à jour pour utiliser la déstructuration pour obtenir le premier segment
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -38,21 +36,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedUserDetails) {
         const userDetails: User = JSON.parse(storedUserDetails);
         setUser(userDetails);
-        if (pathname !== "/") {
-          router.replace("/");
-        }
       }
-      setIsLoading(false);
     };
 
     loadUserData();
   }, [router, pathname]);
-
-  useEffect(() => {
-    if (!isLoading && !user && pathname !== "/(auth)/login") {
-      router.replace("/(auth)/login");
-    }
-  }, [user, isLoading, router, pathname]);
 
   const signInWithToken = async (token: string, userDetails: User) => {
     try {

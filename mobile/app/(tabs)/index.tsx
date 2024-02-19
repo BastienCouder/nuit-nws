@@ -10,10 +10,23 @@ import themeColors from "@/constants/Colors";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchAndUpdateUserData } from "@/features/AuthSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 export default function TabOneScreen() {
   const { user, loading, error } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const checkAuthAndRedirect = async () => {
+      const userToken = await AsyncStorage.getItem("userToken");
+      if (!userToken) {
+        router.replace("/(auth)/login");
+      }
+    };
+
+    checkAuthAndRedirect();
+  }, [router]);
 
   React.useEffect(() => {
     const refreshUserData = async () => {
@@ -25,6 +38,7 @@ export default function TabOneScreen() {
 
     refreshUserData();
   }, [dispatch]);
+
   return (
     <View style={styles.container}>
       {loading ? (

@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", UserController.readUsers);
 router.get("/:token", UserController.getUserByToken);
 router.post("/", UserController.createUser);
-router.get("/user/:userId", UserController.fetchUser);
+router.get("/:userId", UserController.fetchUser);
 
 //swagger
 //read all users
