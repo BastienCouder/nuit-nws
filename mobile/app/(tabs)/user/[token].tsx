@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import * as React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import themeColors from "@/constants/Colors";
 import {
   compareUserSelections,
@@ -65,8 +65,6 @@ export default function UserScreen() {
     });
   };
   const handleSubmit = async () => {
-    let submissionSuccessful = false; // Indicateur pour suivre le succès de la soumission
-
     if (!userDetails || selectedValues.length === 0) {
       Alert.alert("Erreur", "Informations manquantes pour la soumission.");
       return;
@@ -77,27 +75,28 @@ export default function UserScreen() {
         userDetails.id,
         selectedValues
       );
-      if (response.ok && user) {
-        await compareUserSelections(user.id, userDetails.id);
-        submissionSuccessful = true; // Marquez la soumission comme réussie si aucune erreur n'est survenue
-      } else {
-        Alert.alert("Erreur", "La soumission des sélections a échoué.");
+      if (!response.ok) {
+        throw new Error("La soumission des sélections a échoué.");
       }
+
+      // Supposons que compareUserSelections soit également une opération async qui peut échouer
+      if (user) {
+        await compareUserSelections(user.id, userDetails.id);
+      }
+      Alert.alert("Succès", "Sélections soumises avec succès.");
     } catch (error) {
       console.error("Erreur lors de la soumission: ", error);
       Alert.alert("Erreur", "Problème lors de la soumission des sélections.");
     } finally {
-      // Bloc finally s'exécute indépendamment du résultat de la promesse
-      if (submissionSuccessful) {
-        // Si la soumission a réussi, effectuez une action, par exemple une redirection
-        router.replace("/success");
-      } else {
-        // Même en cas d'échec, redirigez vers une autre page, par exemple la page d'accueil ou une page d'erreur
-        router.replace("/"); // Redirection même en cas d'échec
+      // Essayez de rediriger l'utilisateur indépendamment du succès ou de l'échec
+      // Assurez-vous que la route cible ("/") est correctement configurée
+      try {
+        router.replace("/");
+      } catch (navigationError) {
+        console.error("Erreur de navigation: ", navigationError);
       }
     }
   };
-
   return (
     <View style={styles.container}>
       {isLoading ? (
