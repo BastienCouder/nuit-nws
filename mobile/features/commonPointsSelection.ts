@@ -19,13 +19,6 @@ export const submitCommonPointsSelections = async (
   userId: number,
   commonPointsIds: number[]
 ): Promise<Response> => {
-  const dispatch = useAppDispatch();
-
-  const getUserIdFromStorage = async () => {
-    const userId = await AsyncStorage.getItem("userId");
-    return userId;
-  };
-
   try {
     const response = await fetch(`${API_URL}/selectUser/${userId}`, {
       method: "POST",
@@ -41,17 +34,6 @@ export const submitCommonPointsSelections = async (
         errorData.error || "Erreur lors de la soumission des sélections."
       );
     }
-    Alert.alert("Succès", "Les sélections ont été mises à jour avec succès.", [
-      {
-        text: "OK",
-        onPress: async () => {
-          const correctUserId = await getUserIdFromStorage(); // Ou toute autre méthode de récupération
-          if (correctUserId) {
-            dispatch(fetchAndUpdateUserData(Number(correctUserId)));
-          }
-        },
-      },
-    ]);
     router.replace("/");
     return response;
   } catch (error: any) {
