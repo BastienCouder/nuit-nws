@@ -4,6 +4,8 @@ import themeColors from "@/constants/Colors";
 import { useAppDispatch } from "../hooks";
 import { authenticateUser } from "@/features/AuthSlice";
 import QRCodeScanner from "@/components/ScanLogin";
+import { router } from "expo-router";
+import { User } from "@/types";
 
 export default function LoginScreen() {
   const [isScanning, setIsScanning] = useState(false);
@@ -16,22 +18,6 @@ export default function LoginScreen() {
     setIsScanning(true);
   };
 
-  const dispatch = useAppDispatch();
-
-  const handleLogin = () => {
-      // Simulez un token QR pour l'exemple. Remplacez par le token réel obtenu via QR.
-      const qrToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvdWRlcmJhc3RpZW5AZ21haWwuY29tIiwiaWF0IjoxNzA3MTY2NzQzLCJleHAiOjE3Mzg3MDI3NDN9.USIpd8UmP2Y2XtyiaEstjJRg_DovhbTgSJglGdqg8jw';
-
-      dispatch(authenticateUser(qrToken))
-          .unwrap()
-          .then((authState) => {
-              Alert.alert("Succès", "Connexion réussie !");
-          })
-          .catch((error) => {
-              Alert.alert("Erreur", `Connexion échouée: ${error}`);
-          });
-  };
-
   return (
     <View style={styles.container}>
       {isScanning ? (
@@ -42,15 +28,18 @@ export default function LoginScreen() {
               style={{ marginTop: 20 }}
             />
           </Pressable>
-          <QRCodeScanner
-            onDone={() => setIsScanning(false)}
-          />
+          <QRCodeScanner onDone={() => setIsScanning(false)} />
         </>
       ) : (
         <>
           <Image
             source={require("@/assets/images/logo.svg")}
-            style={{ width: 250, height: 255, objectFit: "contain" ,marginTop:-80}}
+            style={{
+              width: 250,
+              height: 255,
+              objectFit: "contain",
+              marginTop: -80,
+            }}
           />
           <View
             style={{ backgroundColor: "blue", borderRadius: 10, width: "80%" }}
@@ -124,7 +113,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: themeColors.background,
     gap: 40,
- 
   },
   title: {
     fontSize: 25,

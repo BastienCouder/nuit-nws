@@ -7,14 +7,24 @@ import {
   ActivityIndicator,
 } from "react-native";
 import themeColors from "@/constants/Colors";
-import { useAppSelector } from "../hooks";
-import { RootState } from "../store";
-import { useLoadAuthState } from "@/hook/useUserDetailsFromStorage";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { fetchAndUpdateUserData } from "@/features/AuthSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabOneScreen() {
-  const { user, loading, error } = useAppSelector((state: RootState) => state.auth);
-  useLoadAuthState();
+  const { user, loading, error } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
+  React.useEffect(() => {
+    const refreshUserData = async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      if (userId) {
+        dispatch(fetchAndUpdateUserData(Number(userId)));
+      }
+    };
+
+    refreshUserData();
+  }, [dispatch]);
   return (
     <View style={styles.container}>
       {loading ? (
@@ -25,28 +35,33 @@ export default function TabOneScreen() {
         <View style={styles.card}>
           <Text style={styles.title}>Profil</Text>
           <View style={styles.details}>
-          <Text style={styles.detailItem}>{user?.prenom}</Text>
-          <Text style={styles.detailItem}>{user?.nom}</Text>
-          <Text style={styles.detailItem}>{user?.entreprise}</Text>
-          <Text style={styles.detailItem}>{user?.poste}</Text>
+            <Text style={styles.detailItem}>{user?.prenom}</Text>
+            <Text style={styles.detailItem}>{user?.nom}</Text>
+            <Text style={styles.detailItem}>{user?.entreprise}</Text>
+            <Text style={styles.detailItem}>{user?.poste}</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.score}>
+            <Text
+              style={{
+                fontFamily: "FugazOne",
+                fontSize: 25,
+                color: themeColors.background,
+              }}
+            >
+              Score
+            </Text>
+            <Text
+              style={{
+                fontFamily: "FugazOne",
+                fontSize: 20,
+                color: themeColors.background,
+              }}
+            >
+              {user?.score} {user && user?.score > 1 ? "points" : "point"}
+            </Text>
+          </View>
         </View>
-        <View style={styles.separator} />
-        <View style={styles.score}>
-          <Text style={{
-            fontFamily: "FugazOne",
-            fontSize: 25,
-            color: themeColors.background,
-          }}>Score</Text>
-          <Text style={{
-            fontFamily: "FugazOne",
-            fontSize: 20,
-            color: themeColors.background,
-          }}>
-            {user?.score} {user && user?.score > 1 ? "points" : "point"}
-          </Text>
-        </View>
-        </View>
-   
       )}
       {/* <Pressable style={styles.button} onPress={() => dispatch(logout())}>
         <Text style={styles.buttonText}>Déconnexion</Text>
@@ -55,7 +70,6 @@ export default function TabOneScreen() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -63,7 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     paddingTop: 40,
     backgroundColor: themeColors.background,
-    paddingBottom:55 
+    paddingBottom: 55,
   },
   card: {
     alignItems: "center",
@@ -81,7 +95,7 @@ const styles = StyleSheet.create({
     fontFamily: "FiraSans",
     paddingHorizontal: 20,
   },
-  title:{
+  title: {
     fontFamily: "FugazOne",
     fontSize: 25,
     color: themeColors.text,

@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/", UserController.readUsers);
 router.get("/:token", UserController.getUserByToken);
 router.post("/", UserController.createUser);
+router.get("/user/:userId", UserController.fetchUser);
 
 //swagger
 //read all users
@@ -47,6 +48,31 @@ router.post("/", UserController.createUser);
  *         description: Erreur interne du serveur
  */
 
+// User By Id
+/**
+ * @swagger
+ * /api/user/{userId}:
+ *   get:
+ *     summary: Récupérer un utilisateur par son Id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Id de l'utilisateur à récupérer
+ *     responses:
+ *       200:
+ *         description: Utilisateur récupéré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 
 // create user
 /**
@@ -82,6 +108,5 @@ router.post("/", UserController.createUser);
  *       500:
  *         description: Erreur interne du serveur
  */
-
 
 export default router;
