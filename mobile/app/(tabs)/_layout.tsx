@@ -97,6 +97,7 @@ export default function TabLayout() {
           options={{
             tabBarIcon: () => null,
             tabBarLabel: () => null,
+            tabBarButton: () => null,
           }}
         />
       </Tabs>
