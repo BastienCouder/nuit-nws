@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import * as React from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import themeColors from "@/constants/Colors";
 import {
   compareUserSelections,
@@ -24,6 +24,7 @@ export default function UserScreen() {
   const { token } = useLocalSearchParams();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const pathname = usePathname();
 
   const { user } = useAppSelector((state: RootState) => state.auth);
 
@@ -80,7 +81,6 @@ export default function UserScreen() {
         throw new Error("La soumission des sélections a échoué.");
       }
 
-      // Supposons que compareUserSelections soit également une opération async qui peut échouer
       if (user) {
         await compareUserSelections(user.id, userDetails.id);
       }
@@ -89,10 +89,10 @@ export default function UserScreen() {
       console.error("Erreur lors de la soumission: ", error);
       Alert.alert("Erreur", "Problème lors de la soumission des sélections.");
     } finally {
-      try {
+      // Amélioration pour éviter les redirections multiples
+      if (pathname !== "/") {
+        console.log("Redirection vers /");
         router.replace("/");
-      } catch (navigationError) {
-        console.error("Erreur de navigation: ", navigationError);
       }
     }
   };
@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingTop: 20,
+    paddingBottom: 55,
     backgroundColor: themeColors.background,
   },
   card: {
