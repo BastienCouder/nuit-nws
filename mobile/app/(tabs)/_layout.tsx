@@ -18,7 +18,7 @@ export default function TabLayout() {
   const isUserPage = pathname.startsWith("/user/");
 
   return (
-    <View style={{ flex:1}}>
+    <View style={{ flex: 1 }}>
       <View
         style={{
           flexDirection: "row",
@@ -97,7 +97,6 @@ export default function TabLayout() {
           options={{
             tabBarIcon: () => null,
             tabBarLabel: () => null,
-            tabBarButton: () => null,
           }}
         />
       </Tabs>
