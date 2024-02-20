@@ -66,6 +66,7 @@ export default function UserScreen() {
       }
     });
   };
+
   const handleSubmit = async () => {
     if (!userDetails || selectedValues.length === 0) {
       Alert.alert("Erreur", "Informations manquantes pour la soumission.");
@@ -88,12 +89,6 @@ export default function UserScreen() {
     } catch (error) {
       console.error("Erreur lors de la soumission: ", error);
       Alert.alert("Erreur", "Problème lors de la soumission des sélections.");
-    } finally {
-      // Amélioration pour éviter les redirections multiples
-      if (pathname !== "/") {
-        console.log("Redirection vers /");
-        router.replace("/");
-      }
     }
   };
   return (
