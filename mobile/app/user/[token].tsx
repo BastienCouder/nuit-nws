@@ -20,33 +20,29 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { RootState } from "@/app/store";
 import { fetchUserDetails } from "@/features/UserSlice";
 import { fetchCommonPoints } from "@/features/CommonPointsSlice";
-import { Route, useFocusEffect } from "expo-router";
 
-interface tokenProps {
-  route: any;
-}
-export default function UserScreen({ route }: tokenProps) {
-  const { token } = route.params;
-
+export default function UserScreen() {
+  const { token } = useLocalSearchParams();
   const dispatch = useAppDispatch();
+
   const { user } = useAppSelector((state: RootState) => state.auth);
+
   const {
     userDetails,
     loading: userDetailsLoading,
     error: userDetailsError,
   } = useAppSelector((state: RootState) => state.user);
-
-  useFocusEffect(() => {
-    if (token) {
-      dispatch(fetchUserDetails(String(token)));
-    }
-  });
-
   const {
     commonPoints,
     loading: commonPointsLoading,
     error: commonPointsError,
   } = useAppSelector((state: RootState) => state.commonPoints);
+
+  React.useEffect(() => {
+    if (token) {
+      dispatch(fetchUserDetails(String(token)));
+    }
+  }, [dispatch, token]);
 
   React.useEffect(() => {
     dispatch(fetchCommonPoints());

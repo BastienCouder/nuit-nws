@@ -1,21 +1,14 @@
-import { StyleSheet, Text,  View } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
+import { Link, useNavigation, useRouter } from "expo-router";
 import themeColors from "@/constants/Colors";
 import CameraComponent from "@/components/CameraComponent";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { useCallback } from "react";
 
 export default function TabScanScreen() {
-  const dispatch = useAppDispatch();
- 
   const router = useRouter();
 
-  const handleBarCodeScanned = useCallback(async ({ data }: { data: string }) => {
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
     router.push(`/user/${data}`);
-  }, [router]);
-
-
-
+  };
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -28,7 +21,7 @@ export default function TabScanScreen() {
         >
           Profil
         </Text>
-        <CameraComponent handleBarCodeScanned={handleBarCodeScanned}/>
+        <CameraComponent handleBarCodeScanned={handleBarCodeScanned} />
       </View>
       <Text style={styles.info}>Scannez le QR Code d'une personne</Text>
     </View>
@@ -43,7 +36,7 @@ const styles = StyleSheet.create({
     gap: 20,
     backgroundColor: themeColors.background,
     paddingBottom: 55,
-    paddingTop:40
+    paddingTop: 40,
   },
   card: {
     alignItems: "center",
@@ -53,7 +46,7 @@ const styles = StyleSheet.create({
     borderColor: themeColors.primary,
     borderWidth: 2,
     borderRadius: 10,
-    gap:20,
+    gap: 20,
     backgroundColor: themeColors.background,
   },
   camera: {
