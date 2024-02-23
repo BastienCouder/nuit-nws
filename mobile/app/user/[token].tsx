@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import themeColors from "@/constants/Colors";
 import {
   compareUserSelections,
@@ -80,6 +80,8 @@ export default function UserScreen() {
     } catch (error) {
       console.error("Erreur lors de la soumission: ", error);
       Alert.alert("Erreur", "Problème lors de la soumission des sélections.");
+    } finally {
+      router.push("/");
     }
   };
   return (
