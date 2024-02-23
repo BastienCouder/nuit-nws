@@ -24,7 +24,6 @@ import { fetchCommonPoints } from "@/features/CommonPointsSlice";
 export default function UserScreen() {
   const { token } = useLocalSearchParams();
   const dispatch = useAppDispatch();
-
   const { user } = useAppSelector((state: RootState) => state.auth);
 
   const {
@@ -42,6 +41,9 @@ export default function UserScreen() {
     if (token) {
       dispatch(fetchUserDetails(String(token)));
     }
+  }, [dispatch, token]);
+
+  React.useEffect(() => {
     dispatch(fetchCommonPoints());
   }, [dispatch]);
 
@@ -89,17 +91,6 @@ export default function UserScreen() {
   };
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#04061F",
-          paddingTop: 20,
-        }}
-      >
-        <Image source={require("@/assets/images/logo-layout.svg")} />
-      </View>
       {isLoading ? (
         <ActivityIndicator size="large" color={themeColors.primary} />
       ) : error ? (
