@@ -7,8 +7,12 @@ export default function TabScanScreen() {
   const router = useRouter();
 
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
-    router.push(`/user/${data}`);
+    router.push({
+      pathname: "/user/[token]",
+      params: { token: data },
+    });
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
