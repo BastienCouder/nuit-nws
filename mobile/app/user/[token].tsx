@@ -42,9 +42,6 @@ export default function UserScreen() {
     if (token) {
       dispatch(fetchUserDetails(String(token)));
     }
-  }, [dispatch, token]);
-
-  React.useEffect(() => {
     dispatch(fetchCommonPoints());
   }, [dispatch]);
 
