@@ -21,14 +21,12 @@ import { RootState } from "@/app/store";
 import { fetchUserDetails } from "@/features/UserSlice";
 import { fetchCommonPoints } from "@/features/CommonPointsSlice";
 
-export default function UserScreen() {
-  const { token } = useLocalSearchParams();
+interface tokenProps {
+  token: string;
+}
+export default function UserScreen({ token }: tokenProps) {
   const dispatch = useAppDispatch();
-  const router = useRouter();
-  const pathname = usePathname();
-
   const { user } = useAppSelector((state: RootState) => state.auth);
-
   const {
     userDetails,
     loading: userDetailsLoading,
