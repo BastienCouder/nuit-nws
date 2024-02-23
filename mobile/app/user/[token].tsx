@@ -95,11 +95,7 @@ export default function UserScreen() {
       >
         <Image source={require("@/assets/images/logo-layout.svg")} />
       </View>
-      {error ? (
-        <Text style={{ color: themeColors.primary, paddingHorizontal: 20 }}>
-          Erreur lors du chargement des détails de l'utilisateur : {error}
-        </Text>
-      ) : userDetails ? (
+      {userDetails ? (
         <View style={styles.card}>
           <Text
             style={{
