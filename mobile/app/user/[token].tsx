@@ -84,17 +84,6 @@ export default function UserScreen() {
   };
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#04061F",
-          paddingTop: 20,
-        }}
-      >
-        <Image source={require("@/assets/images/logo-layout.svg")} />
-      </View>
       {userDetails ? (
         <View style={styles.card}>
           <Text
