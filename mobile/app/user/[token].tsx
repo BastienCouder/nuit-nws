@@ -21,30 +21,20 @@ import { RootState } from "@/app/store";
 import { fetchUserDetails } from "@/features/UserSlice";
 import { fetchCommonPoints } from "@/features/CommonPointsSlice";
 
-// Définition des types pour les états locaux
-interface SelectedValue {
-  [key: number]: boolean;
-}
-
-const UserScreen: React.FC = () => {
+export default function UserScreen() {
   const { token } = useLocalSearchParams<{ token: string }>();
   const dispatch = useAppDispatch();
 
   const { user } = useAppSelector((state: RootState) => state.auth);
-  const {
-    userDetails,
-    loading: userDetailsLoading,
-    error: userDetailsError,
-  } = useAppSelector((state: RootState) => state.user);
-  const {
-    commonPoints,
-    loading: commonPointsLoading,
-    error: commonPointsError,
-  } = useAppSelector((state: RootState) => state.commonPoints);
+  const { userDetails, error: userDetailsError } = useAppSelector(
+    (state: RootState) => state.user
+  );
+  const { commonPoints, error: commonPointsError } = useAppSelector(
+    (state: RootState) => state.commonPoints
+  );
 
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const isLoading = userDetailsLoading || commonPointsLoading;
   const error = userDetailsError || commonPointsError;
 
   useEffect(() => {
@@ -105,9 +95,7 @@ const UserScreen: React.FC = () => {
       >
         <Image source={require("@/assets/images/logo-layout.svg")} />
       </View>
-      {isLoading ? (
-        <ActivityIndicator size="large" color={themeColors.primary} />
-      ) : error ? (
+      {error ? (
         <Text style={{ color: themeColors.primary, paddingHorizontal: 20 }}>
           Erreur lors du chargement des détails de l'utilisateur : {error}
         </Text>
@@ -141,7 +129,7 @@ const UserScreen: React.FC = () => {
               </Text>
             </Pressable>
 
-            {isVisible && !isLoading && commonPoints.length > 0 && (
+            {isVisible && commonPoints.length > 0 && (
               <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={{ paddingRight: 14 }}
@@ -199,7 +187,7 @@ const UserScreen: React.FC = () => {
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
