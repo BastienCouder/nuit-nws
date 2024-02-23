@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -9,8 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as React from "react";
-import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import themeColors from "@/constants/Colors";
 import {
   compareUserSelections,
@@ -21,11 +21,16 @@ import { RootState } from "@/app/store";
 import { fetchUserDetails } from "@/features/UserSlice";
 import { fetchCommonPoints } from "@/features/CommonPointsSlice";
 
-export default function UserScreen() {
+// Définition des types pour les états locaux
+interface SelectedValue {
+  [key: number]: boolean;
+}
+
+const UserScreen: React.FC = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state: RootState) => state.auth);
 
+  const { user } = useAppSelector((state: RootState) => state.auth);
   const {
     userDetails,
     loading: userDetailsLoading,
@@ -37,20 +42,18 @@ export default function UserScreen() {
     error: commonPointsError,
   } = useAppSelector((state: RootState) => state.commonPoints);
 
-  React.useEffect(() => {
-    if (token) {
-      dispatch(fetchUserDetails(String(token)));
-    }
-  }, [dispatch, token]);
-
-  React.useEffect(() => {
-    dispatch(fetchCommonPoints());
-  }, [dispatch]);
-
-  const [selectedValues, setSelectedValues] = React.useState<number[]>([]);
-  const [isVisible, setIsVisible] = React.useState<boolean>(false);
+  const [selectedValues, setSelectedValues] = useState<number[]>([]);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const isLoading = userDetailsLoading || commonPointsLoading;
   const error = userDetailsError || commonPointsError;
+
+  useEffect(() => {
+    dispatch(fetchUserDetails(token));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCommonPoints());
+  }, [dispatch]);
 
   const toggleSelection = (value: number) => {
     setSelectedValues((currentValues) => {
@@ -196,7 +199,7 @@ export default function UserScreen() {
       )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

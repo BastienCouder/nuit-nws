@@ -25,7 +25,6 @@ export default function TabRankingScreen() {
   const { user: userDetails, loading: loadingUserDetails } = useAppSelector(
     (state: RootState) => state.auth
   );
-console.log(userDetails);
 
   React.useEffect(() => {
     dispatch(fetchRanks());
@@ -34,9 +33,7 @@ console.log(userDetails);
   useLoadAuthState();
 
   const isLoading = loadingRank || loadingUserDetails;
-
   const userRank = ranks.find((rank: Rank) => rank.user.id === userDetails?.id);
-console.log(userDetails?.id);
 
   return (
     <View style={styles.container}>
