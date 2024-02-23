@@ -42,8 +42,6 @@ export default function RootLayout() {
     return null;
   }
 
-  
-
   return <RootLayoutNav />;
 }
 
@@ -59,6 +57,10 @@ function RootLayoutNav() {
           />
           <Stack.Screen
             name="(auth)/login"
+            options={{ headerShown: false, presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="user/[token]"
             options={{ headerShown: false, presentation: "modal" }}
           />
         </Stack>

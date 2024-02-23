@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -93,6 +94,17 @@ export default function UserScreen() {
   };
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#04061F",
+          paddingTop: 20,
+        }}
+      >
+        <Image source={require("@/assets/images/logo-layout.svg")} />
+      </View>
       {isLoading ? (
         <ActivityIndicator size="large" color={themeColors.primary} />
       ) : error ? (
@@ -202,6 +214,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
+    marginTop: 40,
     width: "80%",
     borderColor: themeColors.primary,
     borderWidth: 2,

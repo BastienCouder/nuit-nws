@@ -92,14 +92,6 @@ export default function TabLayout() {
             tabBarLabel: () => null,
           }}
         />
-        <Tabs.Screen
-          name="user/[token]"
-          options={{
-            tabBarIcon: () => null,
-            tabBarLabel: () => null,
-            tabBarButton: () => null,
-          }}
-        />
       </Tabs>
 
       {!isUserPage && (
