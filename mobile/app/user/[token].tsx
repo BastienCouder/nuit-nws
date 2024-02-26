@@ -16,34 +16,66 @@ import {
   compareUserSelections,
   submitCommonPointsSelections,
 } from "@/features/commonPointsSelection";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { RootState } from "@/app/store";
 import { fetchUserDetails } from "@/features/UserSlice";
-import { fetchCommonPoints } from "@/features/CommonPointsSlice";
+import { CommonPoint, User } from "@/types";
+import { API_URL } from "@/lib/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function UserScreen() {
   const { token } = useLocalSearchParams<{ token: string }>();
-  const dispatch = useAppDispatch();
 
-  const { user } = useAppSelector((state: RootState) => state.auth);
-  const { userDetails, error: userDetailsError } = useAppSelector(
-    (state: RootState) => state.user
-  );
-  const { commonPoints, error: commonPointsError } = useAppSelector(
-    (state: RootState) => state.commonPoints
-  );
+  const [userDetails, setuserDetails] = useState<User>();
+  const [commonPoints, setCommonPoints] = useState<CommonPoint[]>([]);
 
+  const loadUserDetails = async () => {
+    try {
+      const response = await fetch(`${API_URL}/user/${userDetails?.qrToken}`);
+      if (!response.ok) {
+        throw new Error("Erreur réseau");
+      }
+      const data = await response.json();
+      setuserDetails(data);
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadUserDetails();
+
+  const loadCommonPoint = async () => {
+    try {
+      const response = await fetch(`${API_URL}/commonPoint`);
+      if (!response.ok) {
+        throw new Error("Erreur réseau");
+      }
+      const data = await response.json();
+      setCommonPoints(data);
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadCommonPoint();
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const error = userDetailsError || commonPointsError;
 
-  useEffect(() => {
-    dispatch(fetchUserDetails(token));
-  }, [dispatch]);
+  const [user, setUser] = useState<User>();
 
-  useEffect(() => {
-    dispatch(fetchCommonPoints());
-  }, [dispatch]);
+  const loadUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem("userToken");
+      if (user) {
+        const userDetails: User = JSON.parse(user);
+        const response = await fetch(`${API_URL}/user/${userDetails.qrToken}`);
+        if (!response.ok) {
+          throw new Error("Erreur réseau");
+        }
+        const data = await response.json();
+        setUser(data);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadUser();
 
   const toggleSelection = (value: number) => {
     setSelectedValues((currentValues) => {
@@ -116,13 +148,13 @@ export default function UserScreen() {
               </Text>
             </Pressable>
 
-            {isVisible && commonPoints.length > 0 && (
+            {isVisible && commonPoints?.length > 0 && (
               <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={{ paddingRight: 14 }}
                 showsVerticalScrollIndicator={false}
               >
-                {commonPoints.map((point, index) => (
+                {commonPoints?.map((point, index) => (
                   <TouchableOpacity
                     key={index}
                     style={styles.option}
