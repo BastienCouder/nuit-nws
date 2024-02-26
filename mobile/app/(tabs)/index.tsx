@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,14 +7,32 @@ import {
   ActivityIndicator,
 } from "react-native";
 import themeColors from "@/constants/Colors";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { fetchAndUpdateUserData } from "@/features/AuthSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { API_URL } from "@/lib/utils";
+import { User } from "@/types";
 
 export default function TabOneScreen() {
-  const { user, loading, error } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
+  const [user, setUser] = useState<User>();
+
+  const loadUserDetails = async () => {
+    try {
+      const user = await AsyncStorage.getItem("userToken");
+      if (user) {
+        const userDetails: User = JSON.parse(user);
+        const response = await fetch(`${API_URL}/user/${userDetails.qrToken}`);
+        if (!response.ok) {
+          throw new Error("Erreur réseau");
+        }
+        const data = await response.json();
+        setUser(data);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadUserDetails();
+
   const router = useRouter();
 
   React.useEffect(() => {
@@ -28,55 +46,39 @@ export default function TabOneScreen() {
     checkAuthAndRedirect();
   }, [router]);
 
-  React.useEffect(() => {
-    const refreshUserData = async () => {
-      const userId = await AsyncStorage.getItem("userId");
-      if (userId) {
-        dispatch(fetchAndUpdateUserData(Number(userId)));
-      }
-    };
-
-    refreshUserData();
-  }, [dispatch]);
-
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color={themeColors.primary} />
-      ) : error ? (
-        <Text style={styles.error}>Erreur: {error}</Text>
-      ) : (
-        <View style={styles.card}>
-          <Text style={styles.title}>Profil</Text>
-          <View style={styles.details}>
-            <Text style={styles.detailItem}>{user?.prenom}</Text>
-            <Text style={styles.detailItem}>{user?.nom}</Text>
-            <Text style={styles.detailItem}>{user?.entreprise}</Text>
-            <Text style={styles.detailItem}>{user?.poste}</Text>
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.score}>
-            <Text
-              style={{
-                fontFamily: "FugazOne",
-                fontSize: 25,
-                color: themeColors.background,
-              }}
-            >
-              Score
-            </Text>
-            <Text
-              style={{
-                fontFamily: "FugazOne",
-                fontSize: 20,
-                color: themeColors.background,
-              }}
-            >
-              {user?.score} {user && user?.score > 1 ? "points" : "point"}
-            </Text>
-          </View>
+      <View style={styles.card}>
+        <Text style={styles.title}>Profil</Text>
+        <View style={styles.details}>
+          <Text style={styles.detailItem}>{user?.prenom}</Text>
+          <Text style={styles.detailItem}>{user?.nom}</Text>
+          <Text style={styles.detailItem}>{user?.entreprise}</Text>
+          <Text style={styles.detailItem}>{user?.poste}</Text>
         </View>
-      )}
+        <View style={styles.separator} />
+        <View style={styles.score}>
+          <Text
+            style={{
+              fontFamily: "FugazOne",
+              fontSize: 25,
+              color: themeColors.background,
+            }}
+          >
+            Score
+          </Text>
+          <Text
+            style={{
+              fontFamily: "FugazOne",
+              fontSize: 20,
+              color: themeColors.background,
+            }}
+          >
+            {user?.score} {user && user?.score > 1 ? "points" : "point"}
+          </Text>
+        </View>
+      </View>
+
       {/* <Pressable style={styles.button} onPress={() => dispatch(logout())}>
         <Text style={styles.buttonText}>Déconnexion</Text>
       </Pressable> */}

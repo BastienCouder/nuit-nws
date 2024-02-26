@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -8,32 +8,47 @@ import {
   View,
 } from "react-native";
 import themeColors from "@/constants/Colors";
-import { Rank } from "@/types";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { RootState } from "../store";
-import { fetchRanks } from "@/features/RankSlice";
-import { useLoadAuthState } from "@/hook/useUserDetailsFromStorage";
+import { Rank, User } from "@/types";
+import { API_URL } from "@/lib/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabRankingScreen() {
-  const dispatch = useAppDispatch();
-  const {
-    ranks,
-    loading: loadingRank,
-    error,
-  } = useAppSelector((state: RootState) => state.ranks);
+  const [user, setUser] = useState<User>();
 
-  const { user: userDetails, loading: loadingUserDetails } = useAppSelector(
-    (state: RootState) => state.auth
-  );
+  const [ranks, setRanks] = useState<Rank[]>([]);
+  const loadRanks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/rank`);
+      if (!response.ok) {
+        throw new Error("Erreur réseau");
+      }
+      const data = await response.json();
+      setRanks(data);
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadRanks();
 
-  React.useEffect(() => {
-    dispatch(fetchRanks());
-  }, [dispatch]);
+  const loadUserDetails = async () => {
+    try {
+      const user = await AsyncStorage.getItem("userToken");
+      if (user) {
+        const userDetails: User = JSON.parse(user);
+        const response = await fetch(`${API_URL}/user/${userDetails.qrToken}`);
+        if (!response.ok) {
+          throw new Error("Erreur réseau");
+        }
+        const data = await response.json();
+        setUser(data);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadUserDetails();
 
-  useLoadAuthState();
-
-  const isLoading = loadingRank || loadingUserDetails;
-  const userRank = ranks.find((rank: Rank) => rank.user.id === userDetails?.id);
+  const userRank = ranks.find((rank: Rank) => rank.user.id === user?.id);
 
   return (
     <View style={styles.container}>
@@ -52,35 +67,25 @@ export default function TabRankingScreen() {
           Classement
         </Text>
 
-        {isLoading ? (
-          <ActivityIndicator size="large" color={themeColors.primary} />
-        ) : error ? (
-          <Text style={styles.error}>Erreur: {error}</Text>
-        ) : (
-          <View style={{ gap: 20 }}>
-            <FlatList
-              data={ranks.slice(0, 3)}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.rankingItem}>
-                  <Text style={styles.rankingTextPosition}>
-                    {item.position}
-                  </Text>
+        <View style={{ gap: 20 }}>
+          <FlatList
+            data={ranks.slice(0, 3)}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.rankingItem}>
+                <Text style={styles.rankingTextPosition}>{item.position}</Text>
 
-                  <Text style={styles.rankingTextName}>
-                    {item.user.nom} {item.user.prenom}
-                  </Text>
-                </View>
-              )}
-            />
-            <View style={styles.rankingYourItem}>
-              <Text style={styles.rankingTextPosition}>
-                {userRank?.position}
-              </Text>
-              <Text style={styles.rankingTextYourName}>vous</Text>
-            </View>
+                <Text style={styles.rankingTextName}>
+                  {item.user.nom} {item.user.prenom}
+                </Text>
+              </View>
+            )}
+          />
+          <View style={styles.rankingYourItem}>
+            <Text style={styles.rankingTextPosition}>{userRank?.position}</Text>
+            <Text style={styles.rankingTextYourName}>vous</Text>
           </View>
-        )}
+        </View>
       </View>
     </View>
   );
