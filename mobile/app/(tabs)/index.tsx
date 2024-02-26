@@ -14,26 +14,28 @@ import { User } from "@/types";
 
 export default function TabOneScreen() {
   const [user, setUser] = useState<User>();
-
-  const loadUserDetails = async () => {
-    try {
-      const user = await AsyncStorage.getItem("userDetails");
-      if (user) {
-        const userDetails: User = JSON.parse(user);
-        const response = await fetch(`${API_URL}/user/${userDetails.qrToken}`);
-        if (!response.ok) {
-          throw new Error("Erreur réseau");
-        }
-        const data = await response.json();
-        setUser(data);
-      }
-    } catch (error) {
-      console.error("Erreur lors du chargement des données : ", error);
-    }
-  };
-  loadUserDetails();
-
   const router = useRouter();
+
+  React.useEffect(() => {
+    const loadUserDetails = async () => {
+      try {
+        const userToken = await AsyncStorage.getItem("userToken");
+        if (userToken) {
+          const token = JSON.parse(userToken);
+          const response = await fetch(`${API_URL}/user/${token}`);
+          if (!response.ok) {
+            throw new Error("Erreur réseau");
+          }
+          const data = await response.json();
+          setUser(data);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des données : ", error);
+      }
+    };
+
+    loadUserDetails();
+  }, [router]);
 
   React.useEffect(() => {
     const checkAuthAndRedirect = async () => {
