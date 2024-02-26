@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,36 +14,28 @@ import { User } from "@/types";
 
 export default function TabOneScreen() {
   const [user, setUser] = useState<User>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const loadUserDetails = async () => {
+    try {
+      const user = await AsyncStorage.getItem("userDetails");
+      if (user) {
+        const userDetails: User = JSON.parse(user);
+        const response = await fetch(`${API_URL}/user/${userDetails.qrToken}`);
+        if (!response.ok) {
+          throw new Error("Erreur réseau");
+        }
+        const data = await response.json();
+        setUser(data);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des données : ", error);
+    }
+  };
+  loadUserDetails();
 
   const router = useRouter();
 
-  useEffect(() => {
-    const loadUserDetails = async () => {
-      try {
-        const userToken = await AsyncStorage.getItem("userToken");
-        if (userToken) {
-          const userDetails: User = JSON.parse(userToken);
-          const response = await fetch(
-            `${API_URL}/user/${userDetails.qrToken}`
-          );
-          if (!response.ok) {
-            throw new Error("Erreur réseau");
-          }
-          const data = await response.json();
-          setUser(data);
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des données : ", error);
-        setError("Erreur lors du chargement des données.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserDetails();
-
+  React.useEffect(() => {
     const checkAuthAndRedirect = async () => {
       const userToken = await AsyncStorage.getItem("userToken");
       if (!userToken) {
@@ -53,14 +45,6 @@ export default function TabOneScreen() {
 
     checkAuthAndRedirect();
   }, [router]);
-
-  if (loading) {
-    return <ActivityIndicator size="large" color={themeColors.primary} />;
-  }
-
-  if (error) {
-    return <Text style={styles.error}>{error}</Text>;
-  }
 
   return (
     <View style={styles.container}>
