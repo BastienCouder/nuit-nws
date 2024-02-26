@@ -29,7 +29,7 @@ export default function UserScreen() {
 
   const loadUserDetails = async () => {
     try {
-      const response = await fetch(`${API_URL}/user/${userDetails?.qrToken}`);
+      const response = await fetch(`${API_URL}/user/${token}`);
       if (!response.ok) {
         throw new Error("Erreur réseau");
       }
