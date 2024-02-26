@@ -28,7 +28,7 @@ export const loginWithQR = async (req: Request, res: Response) => {
 
     // Si une nouvelle session a été créée, renvoyez la réponse avec le nouveau token
     const userResponse = {
-      id:user.id,
+      id: user.id,
       nom: user.nom,
       prenom: user.prenom,
       email: user.email,
@@ -75,9 +75,13 @@ const generateSessionToken = async (user: User) => {
     });
 
     // Générer et retourner un jeton de session
-    const token = jwt.sign({ sessionId: newSession.id }, process.env.ANOTHER_SECRET_KEY!, {
-      expiresIn: "365d",
-    });
+    const token = jwt.sign(
+      { sessionId: newSession.id },
+      process.env.ANOTHER_SECRET_KEY!,
+      {
+        expiresIn: "365d",
+      }
+    );
     return { isSessionActive: false, token: token };
   } catch (error) {
     console.error("Erreur lors de la génération du jeton de session :", error);
@@ -85,26 +89,75 @@ const generateSessionToken = async (user: User) => {
   }
 };
 
-
-export const   getQrCodes = async (req: Request, res: Response) => {
+export const getQrCodes = async (req: Request, res: Response) => {
   try {
-      const users = await prisma.user.findMany({
-          select: {
-              nom: true,
-              prenom: true,
-              qrCodeUrl: true,
-          }
-      });
-      res.status(200).json(users);
+    const users = await prisma.user.findMany({
+      select: {
+        nom: true,
+        prenom: true,
+        qrCodeUrl: true,
+      },
+    });
+    res.status(200).json(users);
   } catch (error) {
-      console.error("Erreur lors de la récupération des utilisateurs :", error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+    console.error("Erreur lors de la récupération des utilisateurs :", error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
   }
-}
+};
+
+export const getUserDetails = async (req: Request, res: Response) => {
+  try {
+    // Extraire le token JWT depuis l'entête d'autorisation
+    const token = req.headers.authorization?.split(" ")[1]; // Supposons que le token est envoyé comme "Bearer <token>"
+    if (!token) {
+      return res.status(401).json({ message: "Aucun token fourni." });
+    }
+
+    // Vérifier et décoder le token JWT
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET_KEY!);
+    if (!decoded || !decoded.email) {
+      return res.status(401).json({ message: "Token invalide." });
+    }
+
+    // Trouver l'utilisateur basé sur l'email décodé du token
+    const user = await prisma.user.findUnique({
+      where: { email: decoded.email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+
+    // Préparer la réponse en excluant les informations sensibles
+    const userResponse = {
+      id: user.id,
+      nom: user.nom,
+      prenom: user.prenom,
+      email: user.email,
+      tel: user.tel,
+      entreprise: user.entreprise,
+      poste: user.poste,
+      score: user.score,
+      dateInscription: user.dateInscription,
+    };
+
+    // Envoyer les détails de l'utilisateur
+    res.status(200).json(userResponse);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des détails de l'utilisateur :",
+      error
+    );
+    res.status(500).json({
+      error: "Erreur lors de la récupération des détails de l'utilisateur.",
+    });
+  }
+};
 
 const authController = {
   loginWithQR,
-  getQrCodes
+  getQrCodes,
+  getUserDetails,
 };
 
 export { authController };

@@ -6,6 +6,7 @@ const router = express.Router();
 // Routes d'authentification
 router.post("/login/qr", authController.loginWithQR);
 router.get("/qrcodes", authController.getQrCodes);
+router.get("/details", authController.getUserDetails);
 
 /**
  * @swagger
@@ -64,7 +65,6 @@ router.get("/qrcodes", authController.getQrCodes);
  *         description: Erreur interne du serveur.
  */
 
-
 //qr codes
 /**
  * @swagger
@@ -94,6 +94,5 @@ router.get("/qrcodes", authController.getQrCodes);
  *       500:
  *         description: Erreur interne du serveur
  */
-
 
 export default router;
