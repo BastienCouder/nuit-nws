@@ -9,7 +9,7 @@ export default function LoginScreen() {
   const handleQRCodeScan = () => setIsScanning(true);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-10">
+    <div className="flex h-full flex-col items-center justify-center gap-10 overflow-hidden">
       {isScanning ? (
         <>
           <button onClick={handleStopScan} className="mt-5">

@@ -12,7 +12,7 @@ export default function TabScanScreen() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-start gap-5 pt-10">
-      <div className="flex flex-col items-center justify-center p-5 w-[20rem] border-2 border-primary rounded-lg gap-4">
+      <div className="flex flex-col items-center justify-center p-5 w-[18rem] border-2 border-primary rounded-lg gap-4">
         <p className="font-fugazone text-2xl">Profil</p>
         <CameraComponent handleBarCodeScanned={handleBarCodeScanned} />
       </div>
