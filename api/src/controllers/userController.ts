@@ -46,7 +46,7 @@ export const createUser = async (req: Request, res: Response) => {
       fs.mkdirSync(qrImagesDir, { recursive: true });
     }
 
-    const qrImagePath = path.join(qrImagesDir, `${prenom}_${nom}_qrcode.png`);
+    const qrImagePath = path.join(qrImagesDir, `${email}_qrcode.png`);
     const saveQRCode: Promise<unknown> = new Promise((resolve, reject) => {
       const stream = fs.createWriteStream(qrImagePath);
       toFileStream(stream, qrToken, (error) => {
@@ -72,12 +72,6 @@ export const createUser = async (req: Request, res: Response) => {
 
     await saveQRCode;
 
-    const maxLength = 45; // Ajustez ceci en fonction de la longueur maximale de votre colonne
-    const truncatedQrCodeUrl =
-      qrCodeUrl.length > maxLength
-        ? qrCodeUrl.substring(0, maxLength)
-        : qrCodeUrl;
-
     // Créer un nouvel utilisateur avec le QR code URL et le chemin de fichier
     const user: User = await prisma.user.create({
       data: {
@@ -87,7 +81,7 @@ export const createUser = async (req: Request, res: Response) => {
         tel,
         entreprise,
         poste,
-        qrCodeUrl: truncatedQrCodeUrl,
+        qrCodeUrl,
         qrToken,
         lastLoginAt: new Date(),
       },

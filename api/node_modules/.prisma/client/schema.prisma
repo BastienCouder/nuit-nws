@@ -20,8 +20,8 @@ model User {
   role            String                 @default("user")
   score           Int                    @default(0)
   dateInscription DateTime               @default(now())
-  qrCodeUrl       String
-  qrToken         String                 @unique
+  qrCodeUrl       String                 @db.Text
+  qrToken         String                 @unique @db.VarChar(255)
   lastLoginAt     DateTime
   sessions        Session[]
   ranks           Rank[]
