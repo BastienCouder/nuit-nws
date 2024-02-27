@@ -6,10 +6,6 @@ interface CommonPointSelectionResponse {
   scoreUpdate: number;
 }
 
-interface ErrorResponse {
-  error: string;
-}
-
 export const compareUserSelections = async (
   userId1: number,
   userId2: number
@@ -18,14 +14,14 @@ export const compareUserSelections = async (
     const response = await fetch(
       `${API_URL}/selectUser/compare/${userId1}/${userId2}`
     );
+
     if (!response.ok) {
-      const errorData: ErrorResponse = await response.json();
+      const errorData = await response.json();
       throw new Error(
         errorData.error || "Erreur lors de la comparaison des sélections."
       );
     }
     const result: CommonPointSelectionResponse = await response.json();
-    console.log("Comparaison réussie:", result);
     return result;
   } catch (error: any) {
     console.error("Erreur lors de la comparaison des sélections:", error);

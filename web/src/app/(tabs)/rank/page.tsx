@@ -5,10 +5,15 @@ import { API_URL } from "@/lib/utils";
 import { cookies } from "next/headers";
 
 async function getRanks() {
-  const res = await fetch(`${API_URL}/rank`);
+  const res = await fetch(`${API_URL}/rank`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch ranks");
+    console.error("Failed to fetch ranks");
   }
 
   return res.json();
@@ -17,10 +22,15 @@ async function getRanks() {
 async function getUserDetails() {
   const cookieStore = cookies();
   const token = cookieStore.get("userToken");
-  const res = await fetch(`${API_URL}/user/${token?.value}`);
+  const res = await fetch(`${API_URL}/user/${token?.value}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch user");
+    console.error("Failed to fetch user");
   }
 
   return res.json();
@@ -29,6 +39,7 @@ async function getUserDetails() {
 export default async function RankingPage() {
   const ranks: Rank[] = await getRanks();
   const user: User = await getUserDetails();
+  console.log(ranks);
 
   const userRank = ranks.find((rank: Rank) => rank.user.id === user?.id);
 

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fira_Sans, Fugaz_One } from "next/font/google";
 import "@/styles/globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const fira_sans = Fira_Sans({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
         className={`${fugaz_one.variable} ${fira_sans.variable}  ${fira_sans_bold.variable}`}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );

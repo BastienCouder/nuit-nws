@@ -5,7 +5,13 @@ import CommonPoints from "./_components/common-point";
 import { CommonPoint, User } from "@/types";
 
 async function getUserDetails(params: { token: string }) {
-  const res = await fetch(`${API_URL}/user/${params.token}`);
+  const res = await fetch(`${API_URL}/user/${params.token}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
   console.error("Failed to fetch user");
 
   return res.json();
@@ -14,7 +20,12 @@ async function getUserDetails(params: { token: string }) {
 async function getUserCurrentDetails() {
   const cookieStore = cookies();
   const token = cookieStore.get("userToken");
-  const res = await fetch(`${API_URL}/user/${token?.value}`);
+  const res = await fetch(`${API_URL}/user/${token?.value}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!res.ok) {
     console.error("Failed to fetch user");
@@ -24,7 +35,12 @@ async function getUserCurrentDetails() {
 }
 
 async function getCommonPoints() {
-  const res = await fetch(`${API_URL}/commonPoint`);
+  const res = await fetch(`${API_URL}/commonPoint`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch user");

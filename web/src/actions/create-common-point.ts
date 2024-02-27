@@ -1,14 +1,10 @@
 "use server";
 import { API_URL } from "@/lib/utils";
 
-interface ErrorResponse {
-  error: string;
-}
-
-export const submitCommonPointsSelections = async (
+export async function submitCommonPointsSelections(
   userId: number,
   commonPointsIds: number[]
-): Promise<Response> => {
+): Promise<string | null> {
   try {
     const response = await fetch(`${API_URL}/selectUser/${userId}`, {
       method: "POST",
@@ -17,16 +13,15 @@ export const submitCommonPointsSelections = async (
       },
       body: JSON.stringify({ commonPointsIds }),
     });
+    const result = await response.json();
 
     if (!response.ok) {
-      const errorData: ErrorResponse = await response.json();
-      throw new Error(
-        errorData.error || "Erreur lors de la soumission des sélections."
-      );
+      return "Erreur lors de la soumissions des sélections.";
     }
-    return response;
+
+    return result;
   } catch (error: any) {
     console.error("Erreur lors de la soumission:", error.message);
-    return error;
+    return null;
   }
-};
+}

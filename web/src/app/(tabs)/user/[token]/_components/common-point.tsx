@@ -3,8 +3,10 @@
 import { compareUserSelections } from "@/actions/compare-common-point";
 import { submitCommonPointsSelections } from "@/actions/create-common-point";
 import { CommonPoint, User } from "@/types";
+import { error } from "console";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface CommonPointsProps {
   commonPoints: CommonPoint[];
@@ -35,26 +37,25 @@ export default function CommonPoints({
 
   const handleSubmit = async () => {
     if (!userDetails || selectedValues.length === 0) {
-      console.error("Erreur", "Informations manquantes pour la soumission.");
+      toast("Informations manquantes pour la soumission.");
       return;
     }
 
     try {
-      const response = await submitCommonPointsSelections(
+      const res = await submitCommonPointsSelections(
         userDetails.id,
         selectedValues
       );
-      if (!response.ok) {
-        throw new Error("La soumission des sélections a échoué.");
+      if (res === "Erreur lors de la soumissions des sélections.") {
+        toast("Vous ne pouvez avoir que 3 points communs au maximum");
+        return null;
       }
-
-      if (user) {
-        await compareUserSelections(user.id, userDetails.id);
-      }
-      console.error("Succès", "Sélections soumises avec succès.");
+      await compareUserSelections(11, userDetails.id);
+      toast("Points communs soumis avec succès");
     } catch (error) {
+      toast("Erreur lors de la soumission");
+
       console.error("Erreur lors de la soumission: ", error);
-      console.error("Erreur", "Problème lors de la soumission des sélections.");
     } finally {
       router.push("/");
     }
@@ -100,13 +101,13 @@ export default function CommonPoints({
       )}
       {!isVisible && selectedValues.length > 0 && (
         <div className="w-full mt-4">
-          <ul className="list-disc pl-5">
+          <ul className="list-disc pl-5 space-y-2">
             {selectedValues.map((selectedValueId, index) => {
               const selectedPoint = commonPoints.find(
                 (point) => point.id === selectedValueId
               );
               return (
-                <li key={index} className="text-sm text-primary list-none">
+                <li key={index} className="text-sm list-none">
                   {selectedPoint?.contenu}
                 </li>
               );
