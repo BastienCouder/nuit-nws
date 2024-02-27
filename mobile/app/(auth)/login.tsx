@@ -13,7 +13,7 @@ export default function LoginScreen() {
     const checkAuthentication = async () => {
       const userToken = await AsyncStorage.getItem("userToken");
       if (userToken) {
-        router.replace("/");
+        router.replace("/modal");
       }
     };
 
