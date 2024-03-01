@@ -3,7 +3,6 @@
 import { compareUserSelections } from "@/actions/compare-common-point";
 import { submitCommonPointsSelections } from "@/actions/create-common-point";
 import { CommonPoint, User } from "@/types";
-import { error } from "console";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -50,7 +49,7 @@ export default function CommonPoints({
         toast("Vous ne pouvez avoir que 3 points communs au maximum");
         return null;
       }
-      await compareUserSelections(11, userDetails.id);
+      await compareUserSelections(user.id, userDetails.id);
       toast("Points communs soumis avec succès");
     } catch (error) {
       toast("Erreur lors de la soumission");

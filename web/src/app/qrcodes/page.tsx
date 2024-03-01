@@ -2,7 +2,7 @@ import { API_URL } from "@/lib/utils";
 import Image from "next/image";
 
 async function getQrcodes() {
-  const res = await fetch(`${API_URL}/auth/qrcodes`);
+  const res = await fetch(`${API_URL}/auth/qrcodes`, { cache: "no-store" });
 
   if (!res.ok) {
     console.error("Failed to fetch qrcodes");

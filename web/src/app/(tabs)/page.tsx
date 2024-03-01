@@ -4,7 +4,9 @@ import { cookies } from "next/headers";
 async function getUserDetails() {
   const cookieStore = cookies();
   const token = cookieStore.get("userToken");
-  const res = await fetch(`${API_URL}/user/${token?.value}`);
+  const res = await fetch(`${API_URL}/user/${token?.value}`, {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch user");
