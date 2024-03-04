@@ -24,23 +24,33 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(body_parser_1.default.text({ type: "/" }));
 // Définir les options de CORS si nécessaire
-const clientUrl = process.env.CLIENT_URL || "http://localhost:8081";
-const corsOptions = {
-    origin: [clientUrl],
-    credentials: true,
-};
-app.use((0, cors_1.default)(corsOptions));
-app.get("/", (req, res) => {
+// const allowedOrigins = ['http://localhost:8081', 'https://nuit-nws.bastiencouder.com'];
+// const corsOptions: CorsOptions = {
+//     origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+//       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'), false);
+//       }
+//     },
+//     credentials: true,
+// };
+// app.use(cors(corsOptions));
+app.use((0, cors_1.default)({
+    origin: "*", // Permet à toutes les origines d'accéder à l'API
+    credentials: true, // Permet les requêtes avec des credentials (cookies, données d'authentification, etc.)
+}));
+app.get("/api", (req, res) => {
     res.send('Express + TypeScript Server. /api-docs pour acceder à la documentation');
 });
 // Utilisation des routes
-app.use("/user", user_routes_1.default);
-app.use("/rank", rank_routes_1.default);
-app.use("/auth", auth_routes_1.default);
-app.use("/selectUser", selectUser_routes_1.default);
-app.use("/commonPoint", commonPoint_routes_1.default);
+app.use("/api/user", user_routes_1.default);
+app.use("/api/rank", rank_routes_1.default);
+app.use("/api/auth", auth_routes_1.default);
+app.use("/api/selectUser", selectUser_routes_1.default);
+app.use("/api/commonPoint", commonPoint_routes_1.default);
 // Route pour la documentation Swagger
-app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.default));
+app.use("/api/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.default));
 // Lancement du serveur
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Le serveur a démarré au port ${PORT}`));

@@ -3,22 +3,33 @@ import { selectUserController } from "../controllers/selectUserController";
 const router = express.Router();
 
 // selectUser routes
-router.post("/:userId", selectUserController.createSelectionsForUser);
-router.get('/compare/:userId1/:userId2', selectUserController.compareSelectUser);
-
+router.post(
+  "/:userId/:userIdSelect",
+  selectUserController.createSelectionsForUser
+);
+router.get(
+  "/compare/:userId1/:userId2",
+  selectUserController.compareSelectUser
+);
 /**
  * @swagger
- * /api/selectUser/{userId}:
+ * /api/selectUser/{userId}/{userIdSelect}:
  *   post:
- *     summary: Créer des sélections de points communs pour un utilisateur
- *     description: Permet de créer jusqu'à trois sélections de points communs pour un utilisateur donné.
+ *     summary: Créer des sélections de points communs entre deux utilisateurs
+ *     description: Permet de créer jusqu'à trois sélections de points communs pour un utilisateur donné par rapport à un autre utilisateur sélectionné.
  *     parameters:
  *       - in: path
  *         name: userId
  *         required: true
  *         schema:
  *           type: integer
- *         description: L'ID de l'utilisateur pour lequel créer les sélections
+ *         description: L'ID de l'utilisateur qui fait la sélection.
+ *       - in: path
+ *         name: userIdSelect
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: L'ID de l'utilisateur sélectionné pour les points communs.
  *     requestBody:
  *       required: true
  *       content:
@@ -30,16 +41,16 @@ router.get('/compare/:userId1/:userId2', selectUserController.compareSelectUser)
  *                 type: array
  *                 items:
  *                   type: integer
- *                 description: Les IDs des points communs à sélectionner
+ *                 description: Les IDs des points communs à sélectionner.
  *     responses:
  *       200:
- *         description: Sélections créées avec succès
+ *         description: Sélections créées avec succès.
  *       400:
- *         description: Données invalides fournies ou nombre de sélections dépassé
+ *         description: Données invalides fournies, nombre de sélections dépassé ou contraintes non respectées.
  *       409:
- *         description: Violation de contrainte unique ou de clé étrangère
+ *         description: Violation de contrainte unique ou de clé étrangère.
  *       500:
- *         description: Erreur interne du serveur
+ *         description: Erreur interne du serveur.
  */
 
 /**
@@ -71,6 +82,5 @@ router.get('/compare/:userId1/:userId2', selectUserController.compareSelectUser)
  *       500:
  *         description: Erreur interne du serveur
  */
-
 
 export default router;

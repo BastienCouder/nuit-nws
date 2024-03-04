@@ -3,54 +3,88 @@ import prisma from "../config/prisma";
 import { updateRankings } from "./rankController";
 
 export const createSelectionsForUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  // Extraction des IDs depuis les paramètres de la requête
+  const { userId, userIdSelect } = req.params;
   const { commonPointsIds } = req.body;
+  console.log(userId);
+  console.log(userIdSelect);
 
-  if (!Array.isArray(commonPointsIds) || commonPointsIds.length === 0 || commonPointsIds.length > 3) {
-    return res.status(400).json({ error: "commonPointsIds doit être un tableau de 1 à 3 éléments." });
+  // Validation des commonPointsIds
+  if (
+    !Array.isArray(commonPointsIds) ||
+    commonPointsIds.length === 0 ||
+    commonPointsIds.length > 3
+  ) {
+    return res.status(400).json({
+      error: "commonPointsIds doit être un tableau de 1 à 3 éléments.",
+    });
   }
 
+  // Conversion des userId et userIdSelect en entiers
   const utilisateurIdInt = parseInt(userId, 10);
+  const utilisateurIdSelectInt = parseInt(userIdSelect, 10);
+
   try {
+    // Compte le nombre de sélections existantes pour cette paire d'utilisateurs
     const existingSelections = await prisma.selectionUtilisateur.count({
-      where: { userId: utilisateurIdInt },
+      where: {
+        userId: utilisateurIdInt,
+        userIdSelect: utilisateurIdSelectInt,
+      },
     });
 
+    // Vérifie si l'ajout des nouveaux points communs respecte la limite de 3 sélections par utilisateur sélectionné
     if (existingSelections + commonPointsIds.length > 3) {
-      return res.status(400).json({ error: "Un utilisateur ne peut avoir que 3 points communs au maximum." });
+      return res.status(400).json({
+        error:
+          "Un utilisateur ne peut avoir que 3 points communs au maximum par utilisateur sélectionné.",
+      });
     }
-    await prisma.selectionUtilisateur.deleteMany({
-      where: { userId: utilisateurIdInt },
-    });
 
+    // Création des nouvelles sélections avec gestion des deux IDs
     const selections = await Promise.all(
-      commonPointsIds.map((commonPointId: number) =>
+      commonPointsIds.map((commonPointId) =>
         prisma.selectionUtilisateur.create({
           data: {
             userId: utilisateurIdInt,
+            userIdSelect: utilisateurIdSelectInt,
             commonPointId,
           },
         })
       )
     );
 
-    res.status(200).json(selections);
-  } catch (error: any) {
-    if (error.code === 'P2002') {
-      return res.status(409).json({ error: "Une violation de la contrainte unique s'est produite." });
-    } else if (error.code === 'P2003') {
-      return res.status(409).json({ error: "Une violation de la contrainte de clé étrangère s'est produite." });
-    }
-    console.error(error);
-    res.status(500).json({ error: `Erreur du serveur: ${error.message}` });
+    // Envoie les sélections créées en réponse
+    return res.status(200).json(selections);
+  } catch (error) {
+    // Gestion des erreurs spécifiques à la base de données
+    if (
+      error instanceof Error &&
+      error.name === "PrismaClientKnownRequestError"
+    )
+      // Gestion des autres types d'erreurs
+      console.error(error);
+    return res.status(500).json({
+      error: `Erreur du serveur: ${
+        error instanceof Error ? error.message : error
+      }`,
+    });
   }
 };
 
 export const compareSelectUser = async (req: Request, res: Response) => {
   const { userId1, userId2 } = req.params;
 
-  if (!userId1 || isNaN(parseInt(userId1, 10)) || !userId2 || isNaN(parseInt(userId2, 10))) {
-    return res.status(400).json({ error: "Les identifiants des utilisateurs sont requis et doivent être des nombres." });
+  if (
+    !userId1 ||
+    isNaN(parseInt(userId1, 10)) ||
+    !userId2 ||
+    isNaN(parseInt(userId2, 10))
+  ) {
+    return res.status(400).json({
+      error:
+        "Les identifiants des utilisateurs sont requis et doivent être des nombres.",
+    });
   }
 
   try {
@@ -70,7 +104,9 @@ export const compareSelectUser = async (req: Request, res: Response) => {
 
     const commonContents = selectionsUser1
       .filter(({ commonPointId }) =>
-        selectionsUser2.some(({ commonPoint: point2 }) => commonPointId === point2.id)
+        selectionsUser2.some(
+          ({ commonPoint: point2 }) => commonPointId === point2.id
+        )
       )
       .map(({ commonPoint }) => commonPoint.contenu);
 
@@ -97,9 +133,9 @@ export const compareSelectUser = async (req: Request, res: Response) => {
   }
 };
 
-
 const selectUserController = {
-  createSelectionsForUser, compareSelectUser
+  createSelectionsForUser,
+  compareSelectUser,
 };
 
-export { selectUserController }
+export { selectUserController };

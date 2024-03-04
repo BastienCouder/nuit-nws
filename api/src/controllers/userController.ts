@@ -47,30 +47,7 @@ export const createUser = async (req: Request, res: Response) => {
     }
 
     const qrImagePath = path.join(qrImagesDir, `${email}_qrcode.png`);
-    const saveQRCode: Promise<unknown> = new Promise((resolve, reject) => {
-      const stream = fs.createWriteStream(qrImagePath);
-      toFileStream(stream, qrToken, (error) => {
-        if (error) {
-          console.error(
-            "Erreur lors de la sauvegarde du fichier QR code :",
-            error
-          );
-          reject(error);
-        }
-      });
-
-      stream.on("finish", () => {
-        console.log("QR Code saved at:", qrImagePath);
-        resolve(""); // Résoudre la promesse lorsque l'écriture du fichier est terminée
-      });
-
-      stream.on("error", (error) => {
-        console.error("Erreur lors de l'écriture du fichier QR code :", error);
-        reject(error); // Rejeter la promesse en cas d'erreur lors de l'écriture du fichier
-      });
-    });
-
-    await saveQRCode;
+    await QRCode.toFile(qrImagePath, qrToken);
 
     // Créer un nouvel utilisateur avec le QR code URL et le chemin de fichier
     const user: User = await prisma.user.create({
@@ -139,11 +116,87 @@ export const fetchUser = async (req: Request, res: Response) => {
   }
 };
 
+export const createUsers = async (req: Request, res: Response) => {
+  const users = req.body;
+
+  const createdUsers = [];
+  const errors = [];
+
+  for (const { nom, prenom, email, tel, entreprise, poste } of users) {
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingUser) {
+        errors.push({
+          email,
+          error: "Un utilisateur avec cet email existe déjà.",
+        });
+        continue;
+      }
+
+      const qrToken = jwt.sign({ email }, process.env.JWT_SECRET_KEY!, {
+        expiresIn: "365d",
+      });
+
+      const qrCodeUrl = await QRCode.toDataURL(qrToken);
+
+      const qrImagesDir = path.join(__dirname, "..", "uploads", "qr_images");
+      if (!fs.existsSync(qrImagesDir)) {
+        fs.mkdirSync(qrImagesDir, { recursive: true });
+      }
+      const qrImagePath = path.join(qrImagesDir, `${email}_qrcode.png`);
+      await QRCode.toFile(qrImagePath, qrToken);
+
+      const user = await prisma.user.create({
+        data: {
+          nom,
+          prenom,
+          email,
+          tel,
+          entreprise,
+          poste,
+          qrCodeUrl,
+          qrToken,
+          lastLoginAt: new Date(),
+        },
+      });
+
+      createdUsers.push(user);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la création de l'utilisateur :",
+        email,
+        error
+      );
+      errors.push({
+        email,
+        error: "Erreur lors de la création de l'utilisateur.",
+      });
+    }
+  }
+
+  if (errors.length > 0) {
+    // Si des erreurs se sont produites pendant la création des utilisateurs
+    return res.status(400).json({
+      message: "Certains utilisateurs n'ont pas pu être créés.",
+      errors,
+      createdUsers,
+    });
+  }
+
+  return res.status(201).json({
+    message: "Tous les utilisateurs ont été créés avec succès",
+    createdUsers,
+  });
+};
+
 const UserController = {
   readUsers,
   createUser,
   getUserByToken,
   fetchUser,
+  createUsers,
 };
 
 export { UserController };

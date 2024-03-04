@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = exports.readQrCodes = exports.getUserById = exports.createUser = exports.readUsers = void 0;
+exports.UserController = exports.createUsers = exports.fetchUser = exports.getUserByToken = exports.createUser = exports.readUsers = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const qrcode_1 = __importDefault(require("qrcode"));
 const prisma_1 = __importDefault(require("../config/prisma"));
@@ -36,7 +36,9 @@ exports.readUsers = readUsers;
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { nom, prenom, email, tel, entreprise, poste } = req.body;
     try {
-        const existingUser = yield prisma_1.default.user.findUnique({ where: { email } });
+        const existingUser = yield prisma_1.default.user.findUnique({
+            where: { email },
+        });
         if (existingUser) {
             return res
                 .status(409)
@@ -49,11 +51,11 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Générer un QR code à partir du jeton
         const qrCodeUrl = yield qrcode_1.default.toDataURL(qrToken);
         // Définir un chemin et nom de fichier pour le QR code
-        const qrImagesDir = path_1.default.join(__dirname, '..', 'uploads', 'qr_images');
+        const qrImagesDir = path_1.default.join(__dirname, "..", "uploads", "qr_images");
         if (!fs_1.default.existsSync(qrImagesDir)) {
             fs_1.default.mkdirSync(qrImagesDir, { recursive: true });
         }
-        const qrImagePath = path_1.default.join(qrImagesDir, `${prenom}_${nom}_qrcode.png`);
+        const qrImagePath = path_1.default.join(qrImagesDir, `${email}_qrcode.png`);
         const saveQRCode = new Promise((resolve, reject) => {
             const stream = fs_1.default.createWriteStream(qrImagePath);
             (0, qrcode_2.toFileStream)(stream, qrToken, (error) => {
@@ -72,8 +74,6 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             });
         });
         yield saveQRCode;
-        const maxLength = 45; // Ajustez ceci en fonction de la longueur maximale de votre colonne
-        const truncatedQrCodeUrl = qrCodeUrl.length > maxLength ? qrCodeUrl.substring(0, maxLength) : qrCodeUrl;
         // Créer un nouvel utilisateur avec le QR code URL et le chemin de fichier
         const user = yield prisma_1.default.user.create({
             data: {
@@ -83,7 +83,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 tel,
                 entreprise,
                 poste,
-                qrCodeUrl: truncatedQrCodeUrl,
+                qrCodeUrl,
                 qrToken,
                 lastLoginAt: new Date(),
             },
@@ -96,12 +96,12 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createUser = createUser;
-const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
+const getUserByToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
     try {
         const user = yield prisma_1.default.user.findUnique({
             where: {
-                id: Number(id),
+                qrToken: token,
             },
         });
         if (user) {
@@ -116,30 +116,98 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ error: "Erreur interne du serveur" });
     }
 });
-exports.getUserById = getUserById;
-//code qr
-const readQrCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getUserByToken = getUserByToken;
+const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params; // Extracting userId from the request parameters
     try {
-        const users = yield prisma_1.default.user.findMany({
-            select: {
-                nom: true,
-                prenom: true,
-                qrCodeUrl: true,
-            }
+        const user = yield prisma_1.default.user.findUnique({
+            where: {
+                id: Number(userId), // Ensure the userId is properly cast to a Number if it's passed as a String
+            },
         });
-        res.status(200).json(users);
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        // Respond with the user data if the user is found
+        res.json(user);
     }
     catch (error) {
-        console.error("Erreur lors de la récupération des utilisateurs :", error);
-        res.status(500).json({ error: "Erreur interne du serveur" });
+        console.error("Error fetching user:", error);
+        res
+            .status(500)
+            .json({ error: "Internal server error while fetching user." });
     }
 });
-exports.readQrCodes = readQrCodes;
+exports.fetchUser = fetchUser;
+const createUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const users = req.body;
+    const createdUsers = [];
+    const errors = [];
+    for (const { nom, prenom, email, tel, entreprise, poste } of users) {
+        try {
+            const existingUser = yield prisma_1.default.user.findUnique({
+                where: { email },
+            });
+            if (existingUser) {
+                errors.push({
+                    email,
+                    error: "Un utilisateur avec cet email existe déjà.",
+                });
+                continue;
+            }
+            const qrToken = jsonwebtoken_1.default.sign({ email }, process.env.JWT_SECRET_KEY, {
+                expiresIn: "365d",
+            });
+            const qrCodeUrl = yield qrcode_1.default.toDataURL(qrToken);
+            const qrImagesDir = path_1.default.join(__dirname, "..", "uploads", "qr_images");
+            if (!fs_1.default.existsSync(qrImagesDir)) {
+                fs_1.default.mkdirSync(qrImagesDir, { recursive: true });
+            }
+            const qrImagePath = path_1.default.join(qrImagesDir, `${email}_qrcode.png`);
+            yield qrcode_1.default.toFile(qrImagePath, qrToken);
+            const user = yield prisma_1.default.user.create({
+                data: {
+                    nom,
+                    prenom,
+                    email,
+                    tel,
+                    entreprise,
+                    poste,
+                    qrCodeUrl,
+                    qrToken,
+                    lastLoginAt: new Date(),
+                },
+            });
+            createdUsers.push(user);
+        }
+        catch (error) {
+            console.error("Erreur lors de la création de l'utilisateur :", email, error);
+            errors.push({
+                email,
+                error: "Erreur lors de la création de l'utilisateur.",
+            });
+        }
+    }
+    if (errors.length > 0) {
+        // Si des erreurs se sont produites pendant la création des utilisateurs
+        return res.status(400).json({
+            message: "Certains utilisateurs n'ont pas pu être créés.",
+            errors,
+            createdUsers,
+        });
+    }
+    return res.status(201).json({
+        message: "Tous les utilisateurs ont été créés avec succès",
+        createdUsers,
+    });
+});
+exports.createUsers = createUsers;
 const UserController = {
     readUsers: exports.readUsers,
     createUser: exports.createUser,
-    getUserById: exports.getUserById,
-    readQrCodes: exports.readQrCodes
+    getUserByToken: exports.getUserByToken,
+    fetchUser: exports.fetchUser,
+    createUsers: exports.createUsers,
 };
 exports.UserController = UserController;
 //# sourceMappingURL=userController.js.map

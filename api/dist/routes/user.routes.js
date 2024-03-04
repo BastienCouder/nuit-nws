@@ -8,14 +8,15 @@ const userController_1 = require("../controllers/userController");
 const router = express_1.default.Router();
 // User routes
 router.get("/", userController_1.UserController.readUsers);
-router.get("/:id", userController_1.UserController.getUserById);
-router.get("/qrcodes", userController_1.UserController.readQrCodes);
+router.get("/:token", userController_1.UserController.getUserByToken);
 router.post("/", userController_1.UserController.createUser);
+router.post("/tab", userController_1.UserController.createUsers);
+router.get("/:userId", userController_1.UserController.fetchUser);
 //swagger
 //read all users
 /**
  * @swagger
- * /user/:
+ * /api/user/:
  *   get:
  *     summary: Récupérer tous les utilisateurs
  *     responses:
@@ -27,16 +28,41 @@ router.post("/", userController_1.UserController.createUser);
 // User By Id
 /**
  * @swagger
- * /user/{id}:
+ * /api/user/{token}:
  *   get:
- *     summary: Récupérer un utilisateur par son ID
+ *     summary: Récupérer un utilisateur par son Token
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Token de l'utilisateur à récupérer
+ *     responses:
+ *       200:
+ *         description: Utilisateur récupéré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+// User By Id
+/**
+ * @swagger
+ * /api/user/{userId}:
+ *   get:
+ *     summary: Récupérer un utilisateur par son Id
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: ID de l'utilisateur à récupérer
+ *         description: Id de l'utilisateur à récupérer
  *     responses:
  *       200:
  *         description: Utilisateur récupéré avec succès
@@ -52,7 +78,7 @@ router.post("/", userController_1.UserController.createUser);
 // create user
 /**
  * @swagger
- * /user/:
+ * /api/user/:
  *   post:
  *     summary: Créer un nouvel utilisateur
  *     requestBody:
@@ -80,35 +106,6 @@ router.post("/", userController_1.UserController.createUser);
  *         description: Utilisateur créé avec succès
  *       409:
  *         description: Un utilisateur avec cet email existe déjà
- *       500:
- *         description: Erreur interne du serveur
- */
-//qr codes
-/**
- * @swagger
- * /user/qrcodes:
- *   get:
- *     summary: Récupérer tous les QR codes des utilisateurs
- *     description: Cette route permet de récupérer les noms, prénoms et URLs des QR codes de tous les utilisateurs.
- *     responses:
- *       200:
- *         description: Liste des QR codes récupérée avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   nom:
- *                     type: string
- *                     description: Le nom de l'utilisateur
- *                   prenom:
- *                     type: string
- *                     description: Le prénom de l'utilisateur
- *                   qrCodeUrl:
- *                     type: string
- *                     description: L'URL du QR code de l'utilisateur
  *       500:
  *         description: Erreur interne du serveur
  */

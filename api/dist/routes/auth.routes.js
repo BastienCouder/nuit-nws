@@ -8,9 +8,11 @@ const authController_1 = require("../controllers/authController");
 const router = express_1.default.Router();
 // Routes d'authentification
 router.post("/login/qr", authController_1.authController.loginWithQR);
+router.get("/qrcodes", authController_1.authController.getQrCodes);
+router.get("/details", authController_1.authController.getUserDetails);
 /**
  * @swagger
- * /auth/loginWithQR:
+ * /api/auth/login/qr:
  *   post:
  *     summary: Se connecter avec un QR code
  *     description: Permet à un utilisateur de se connecter en utilisant un QR code.
@@ -63,6 +65,35 @@ router.post("/login/qr", authController_1.authController.loginWithQR);
  *         description: Utilisateur non trouvé.
  *       500:
  *         description: Erreur interne du serveur.
+ */
+//qr codes
+/**
+ * @swagger
+ * /api/auth/qrcodes:
+ *   get:
+ *     summary: Récupérer tous les QR codes des utilisateurs
+ *     description: Cette route permet de récupérer les noms, prénoms et URLs des QR codes de tous les utilisateurs.
+ *     responses:
+ *       200:
+ *         description: Liste des QR codes récupérée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nom:
+ *                     type: string
+ *                     description: Le nom de l'utilisateur
+ *                   prenom:
+ *                     type: string
+ *                     description: Le prénom de l'utilisateur
+ *                   qrCodeUrl:
+ *                     type: string
+ *                     description: L'URL du QR code de l'utilisateur
+ *       500:
+ *         description: Erreur interne du serveur
  */
 exports.default = router;
 //# sourceMappingURL=auth.routes.js.map

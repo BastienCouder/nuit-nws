@@ -16,46 +16,68 @@ exports.selectUserController = exports.compareSelectUser = exports.createSelecti
 const prisma_1 = __importDefault(require("../config/prisma"));
 const rankController_1 = require("./rankController");
 const createSelectionsForUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId } = req.params;
+    // Extraction des IDs depuis les paramètres de la requête
+    const { userId, userIdSelect } = req.params;
     const { commonPointsIds } = req.body;
-    if (!Array.isArray(commonPointsIds) || commonPointsIds.length === 0 || commonPointsIds.length > 3) {
-        return res.status(400).json({ error: "commonPointsIds doit être un tableau de 1 à 3 éléments." });
+    console.log(userId);
+    console.log(userIdSelect);
+    // Validation des commonPointsIds
+    if (!Array.isArray(commonPointsIds) ||
+        commonPointsIds.length === 0 ||
+        commonPointsIds.length > 3) {
+        return res.status(400).json({
+            error: "commonPointsIds doit être un tableau de 1 à 3 éléments.",
+        });
     }
+    // Conversion des userId et userIdSelect en entiers
     const utilisateurIdInt = parseInt(userId, 10);
+    const utilisateurIdSelectInt = parseInt(userIdSelect, 10);
     try {
+        // Compte le nombre de sélections existantes pour cette paire d'utilisateurs
         const existingSelections = yield prisma_1.default.selectionUtilisateur.count({
-            where: { userId: utilisateurIdInt },
+            where: {
+                userId: utilisateurIdInt,
+                userIdSelect: utilisateurIdSelectInt,
+            },
         });
+        // Vérifie si l'ajout des nouveaux points communs respecte la limite de 3 sélections par utilisateur sélectionné
         if (existingSelections + commonPointsIds.length > 3) {
-            return res.status(400).json({ error: "Un utilisateur ne peut avoir que 3 points communs au maximum." });
+            return res.status(400).json({
+                error: "Un utilisateur ne peut avoir que 3 points communs au maximum par utilisateur sélectionné.",
+            });
         }
-        yield prisma_1.default.selectionUtilisateur.deleteMany({
-            where: { userId: utilisateurIdInt },
-        });
+        // Création des nouvelles sélections avec gestion des deux IDs
         const selections = yield Promise.all(commonPointsIds.map((commonPointId) => prisma_1.default.selectionUtilisateur.create({
             data: {
                 userId: utilisateurIdInt,
+                userIdSelect: utilisateurIdSelectInt,
                 commonPointId,
             },
         })));
-        res.status(200).json(selections);
+        // Envoie les sélections créées en réponse
+        return res.status(200).json(selections);
     }
     catch (error) {
-        if (error.code === 'P2002') {
-            return res.status(409).json({ error: "Une violation de la contrainte unique s'est produite." });
-        }
-        else if (error.code === 'P2003') {
-            return res.status(409).json({ error: "Une violation de la contrainte de clé étrangère s'est produite." });
-        }
-        console.error(error);
-        res.status(500).json({ error: `Erreur du serveur: ${error.message}` });
+        // Gestion des erreurs spécifiques à la base de données
+        if (error instanceof Error &&
+            error.name === "PrismaClientKnownRequestError")
+            // Gestion des autres types d'erreurs
+            console.error(error);
+        return res.status(500).json({
+            error: `Erreur du serveur: ${error instanceof Error ? error.message : error}`,
+        });
     }
 });
 exports.createSelectionsForUser = createSelectionsForUser;
 const compareSelectUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId1, userId2 } = req.params;
-    if (!userId1 || isNaN(parseInt(userId1, 10)) || !userId2 || isNaN(parseInt(userId2, 10))) {
-        return res.status(400).json({ error: "Les identifiants des utilisateurs sont requis et doivent être des nombres." });
+    if (!userId1 ||
+        isNaN(parseInt(userId1, 10)) ||
+        !userId2 ||
+        isNaN(parseInt(userId2, 10))) {
+        return res.status(400).json({
+            error: "Les identifiants des utilisateurs sont requis et doivent être des nombres.",
+        });
     }
     try {
         const selectionsUser1 = yield prisma_1.default.selectionUtilisateur.findMany({
@@ -96,7 +118,8 @@ const compareSelectUser = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.compareSelectUser = compareSelectUser;
 const selectUserController = {
-    createSelectionsForUser: exports.createSelectionsForUser, compareSelectUser: exports.compareSelectUser
+    createSelectionsForUser: exports.createSelectionsForUser,
+    compareSelectUser: exports.compareSelectUser,
 };
 exports.selectUserController = selectUserController;
 //# sourceMappingURL=selectUserController.js.map

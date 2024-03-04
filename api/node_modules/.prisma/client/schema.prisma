@@ -53,6 +53,7 @@ model Rank {
 model SelectionUtilisateur {
   id            Int         @id @default(autoincrement())
   userId        Int
+  userIdSelect  Int
   commonPointId Int
   user          User        @relation(fields: [userId], references: [id])
   commonPoint   CommonPoint @relation(fields: [commonPointId], references: [id])

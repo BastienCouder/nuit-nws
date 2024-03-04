@@ -14,7 +14,7 @@ router.delete("/", commonPointController_1.commonPointController.createCommonPoi
 // Create Common Point
 /**
  * @swagger
- * /commonPoint/:
+ * /api/commonPoint/:
  *   post:
  *     summary: Créer un nouveau point commun
  *     requestBody:
@@ -37,7 +37,7 @@ router.delete("/", commonPointController_1.commonPointController.createCommonPoi
 // Read Common Points
 /**
  * @swagger
- * /commonPoint/:
+ * /api/commonPoint/:
  *   get:
  *     summary: Récupérer tous les points communs
  *     responses:
@@ -49,7 +49,7 @@ router.delete("/", commonPointController_1.commonPointController.createCommonPoi
 // Update Common Point
 /**
  * @swagger
- * /commonPoint/:
+ * /api/commonPoint/:
  *   put:
  *     summary: Mettre à jour un point commun
  *     requestBody:
@@ -74,7 +74,7 @@ router.delete("/", commonPointController_1.commonPointController.createCommonPoi
 // Delete Common Point
 /**
  * @swagger
- * /commonPoint/:
+ * /api/commonPoint/:
  *   delete:
  *     summary: Supprimer un point commun
  *     requestBody:
