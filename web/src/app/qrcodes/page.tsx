@@ -15,7 +15,7 @@ export default async function qrCodesScreen() {
 
   return (
     <section className="p-20 w-full">
-      {qrcodes ? (
+      {qrcodes && (
         <ul className="flex gap-12 flex-wrap">
           {qrcodes.map((qrcode: any, index: string) => {
             const myBase64Image = qrcode.qrCodeUrl;
@@ -36,8 +36,6 @@ export default async function qrCodesScreen() {
             );
           })}
         </ul>
-      ) : (
-        <p className={`uppercase text-lg text-primary`}>Aucun utilisateur</p>
       )}
     </section>
   );
