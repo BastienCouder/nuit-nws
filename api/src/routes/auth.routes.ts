@@ -7,6 +7,7 @@ const router = express.Router();
 router.post("/login/qr", authController.loginWithQR);
 router.get("/qrcodes", authController.getQrCodes);
 router.get("/details", authController.getUserDetails);
+router.get("/generate-pdf", authController.generatePdfWithQRCodes);
 
 /**
  * @swagger

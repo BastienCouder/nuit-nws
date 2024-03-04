@@ -2,6 +2,8 @@ import { User } from "@prisma/client";
 import prisma from "../config/prisma";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import PDFDocument from "pdfkit";
+
 export const loginWithQR = async (req: Request, res: Response) => {
   const { qrToken } = req.body;
 
@@ -105,6 +107,75 @@ export const getQrCodes = async (req: Request, res: Response) => {
   }
 };
 
+export const generatePdfWithQRCodes = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        nom: true,
+        prenom: true,
+        qrCodeUrl: true,
+      },
+    });
+
+    const doc = new PDFDocument();
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=users_qrcodes.pdf"
+    );
+    doc.pipe(res);
+
+    let xPos = 50; // Position de départ en X
+    let yPos = 50; // Position de départ en Y
+    const qrCodeSize = 120; // Taille des QR codes (augmentée par rapport à 100)
+    const spacing = 30; // Espace entre les QR codes et les textes
+    const lineSpacing = qrCodeSize + 40; // Espace vertical pour la nouvelle ligne
+
+    users.forEach((user, index) => {
+      const nextXPos = xPos + qrCodeSize + spacing; // Calculer la prochaine position X
+
+      // Ajouter le nom et prénom sous l'image du QR code
+      doc
+        .fontSize(10)
+        .text(`${user.prenom} ${user.nom}`, xPos, yPos + qrCodeSize + 10, {
+          width: qrCodeSize,
+          align: "center",
+        });
+
+      // Ajouter l'image du QR code
+      doc.image(
+        Buffer.from(user.qrCodeUrl.split(",")[1], "base64"),
+        xPos,
+        yPos,
+        {
+          fit: [qrCodeSize, qrCodeSize], // Utiliser qrCodeSize pour les dimensions
+          align: "center",
+        }
+      );
+
+      if (nextXPos + qrCodeSize > doc.page.width - 50) {
+        // Vérifier si on dépasse la largeur de la page
+        xPos = 50; // Réinitialiser la position X pour la nouvelle ligne
+        yPos += lineSpacing; // Décaler la position Y pour la nouvelle ligne
+      } else {
+        xPos = nextXPos; // Passer à la position X suivante sur la même ligne
+      }
+
+      // Vérifier si on atteint la fin de la page pour ajouter une nouvelle page et réinitialiser les positions
+      if (yPos > doc.page.height - 100) {
+        doc.addPage();
+        xPos = 50;
+        yPos = 50;
+      }
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error("Erreur lors de la génération du PDF :", error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+};
+
 export const getUserDetails = async (req: Request, res: Response) => {
   try {
     // Extraire le token JWT depuis l'entête d'autorisation
@@ -158,6 +229,7 @@ const authController = {
   loginWithQR,
   getQrCodes,
   getUserDetails,
+  generatePdfWithQRCodes,
 };
 
 export { authController };

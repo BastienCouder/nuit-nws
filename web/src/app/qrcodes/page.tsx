@@ -1,3 +1,4 @@
+import ButtonGenerate from "@/components/generate-button";
 import { API_URL } from "@/lib/utils";
 import Image from "next/image";
 
@@ -14,7 +15,8 @@ export default async function qrCodesScreen() {
   const qrcodes = await getQrcodes();
 
   return (
-    <section className="p-20 w-full">
+    <section className="p-20 w-full space-y-4">
+      <ButtonGenerate />
       {qrcodes && (
         <ul className="flex gap-12 flex-wrap">
           {qrcodes.map((qrcode: any, index: string) => {
