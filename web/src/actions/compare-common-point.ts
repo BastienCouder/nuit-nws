@@ -1,5 +1,6 @@
 "use server";
 import { API_URL } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 
 interface CommonPointSelectionResponse {
   commonContents: string[];
@@ -21,6 +22,7 @@ export const compareUserSelections = async (
         errorData.error || "Erreur lors de la comparaison des sélections."
       );
     }
+    revalidatePath("/");
     const result: CommonPointSelectionResponse = await response.json();
     return result;
   } catch (error: any) {

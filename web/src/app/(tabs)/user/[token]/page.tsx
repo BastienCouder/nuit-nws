@@ -60,7 +60,7 @@ export default async function userScreen({
 
   return (
     <div
-      className={`flex flex-1 flex-col items-center justify-start pt-5 pb-14`}
+      className={`flex flex-1 flex-col items-center justify-start pt-5 pb-14 overflow-y-auto h-[40rem]`}
     >
       {userDetails ? (
         <div

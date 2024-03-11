@@ -2,6 +2,7 @@
 
 import { compareUserSelections } from "@/actions/compare-common-point";
 import { submitCommonPointsSelections } from "@/actions/create-common-point";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { CommonPoint, User } from "@/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -42,6 +43,7 @@ export default function CommonPoints({
 
     try {
       const res = await submitCommonPointsSelections(
+        user.id,
         userDetails.id,
         selectedValues
       );
@@ -71,7 +73,7 @@ export default function CommonPoints({
           : "Afficher les points communs"}
       </button>
       {isVisible && (
-        <div className="z-50 w-full mt-4 max-h-40 overflow-auto bg-gray-200 p-1 text-background rounded-lg">
+        <ScrollArea className="z-50 w-full mt-4 max-h-40  bg-gray-200 p-1 pr-4  text-background rounded-lg">
           {commonPoints?.length > 0 ? (
             commonPoints.map((point, index) => (
               <div
@@ -96,7 +98,7 @@ export default function CommonPoints({
               Aucun point commun trouvé.
             </p>
           )}
-        </div>
+        </ScrollArea>
       )}
       {!isVisible && selectedValues.length > 0 && (
         <div className="w-full mt-4">
@@ -114,12 +116,14 @@ export default function CommonPoints({
           </ul>
         </div>
       )}
-      <button
-        onClick={handleSubmit}
-        className="px-4 py-2 rounded-lg bg-secondary text-white font-medium mt-4 transition-colors"
-      >
-        Valider
-      </button>
+      {selectedValues.length > 0 && (
+        <button
+          onClick={handleSubmit}
+          className="px-4 py-2 rounded-lg bg-secondary text-white font-medium mt-4 transition-colors"
+        >
+          Valider
+        </button>
+      )}
     </div>
   );
 }

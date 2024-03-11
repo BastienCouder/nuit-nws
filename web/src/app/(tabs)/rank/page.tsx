@@ -47,7 +47,7 @@ export default async function RankingPage() {
                   className="flex flex-row items-center justify-start gap-4 px-4 py-2 border border-primary rounded-full my-1"
                 >
                   <span className="font-fugazone text-lg">{item.position}</span>
-                  <span className="text-lg">
+                  <span className="text-lg capitalize">
                     {item.user.nom} {item.user.prenom}
                   </span>
                 </div>

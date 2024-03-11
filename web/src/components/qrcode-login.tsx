@@ -12,7 +12,7 @@ export default function QrCodeLogin() {
     try {
       await login(data);
 
-      router.push("/");
+      router.push("/modal");
     } catch (error) {
       console.error(error);
     }

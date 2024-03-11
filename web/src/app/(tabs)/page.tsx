@@ -1,5 +1,7 @@
 import { API_URL } from "@/lib/utils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import Logout from "./_components/logout";
 
 async function getUserDetails() {
   const cookieStore = cookies();
@@ -9,10 +11,28 @@ async function getUserDetails() {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch user");
+    console.error("Failed to fetch user");
   }
 
   return res.json();
+}
+
+async function deletingCookies(userId: string) {
+  "use server";
+  cookies().delete("userToken");
+  cookies().delete("userDetails");
+
+  try {
+    const res = await fetch(`${API_URL}/auth/deleteSession/${userId}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error("Failed to fetch user");
+    }
+    redirect("/login");
+  } catch (error) {
+    console.error("Failed to fetch user");
+  }
 }
 
 export default async function Home() {
@@ -43,15 +63,22 @@ export default async function Home() {
                 {user?.score} {user && user?.score > 1 ? "points" : "point"}
               </p>
             </div>
+            <p className={`text-lg text-background`}>
+              {user?.count}{" "}
+              {user && user?.count > 1
+                ? "personnes déjà scannées"
+                : "personne déjà scannée"}
+            </p>
           </>
         ) : (
           <p className={`uppercase text-lg text-primary`}>Aucun utilisateur</p>
         )}
       </div>
       {/* Commenté car vous avez mentionné de ne pas inclure le bouton de déconnexion pour l'instant */}
-      {/* <button className={`mt-5 p-2 border-2 text-primary rounded opacity-80 hover:opacity-100`}>
-          <p className={`text-lg text-center text-primary`}>Déconnexion</p>
-        </button> */}
+      <Logout deletingCookies={deletingCookies} user={user} />
+      <p className=" text-sm w-full fixed flex justify-center bottom-[5rem]">
+        Réalisé par les étudiants de la nws
+      </p>
     </div>
   );
 }

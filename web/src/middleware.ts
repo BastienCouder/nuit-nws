@@ -5,11 +5,11 @@ export function middleware(req: NextRequest) {
 
   // Construction de l'URL absolue pour la redirection
   // Assurez-vous que 'login' se trouve bien à cet emplacement sur votre serveur
-  const loginUrl = new URL("/login", req.url).toString();
+  // const loginUrl = new URL("/login", req.url).toString();
 
-  if (!token) {
-    return NextResponse.redirect(loginUrl);
-  }
+  // if (!token) {
+  //   return NextResponse.redirect(loginUrl);
+  // }
 
   return NextResponse.next();
 }

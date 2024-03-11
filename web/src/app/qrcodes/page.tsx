@@ -15,7 +15,7 @@ export default async function qrCodesScreen() {
   const qrcodes = await getQrcodes();
 
   return (
-    <section className="p-20 w-full space-y-4">
+    <section className="p-20 w-full space-y-4 h-full overflow-y-auto">
       <ButtonGenerate />
       {qrcodes && (
         <ul className="flex gap-12 flex-wrap">
