@@ -11,8 +11,8 @@ import authRoutes from "./routes/auth.routes";
 import selectUserRoutes from "./routes/selectUser.routes";
 
 import commonPointRoutes from "./routes/commonPoint.routes";
-import  swaggerUi  from "swagger-ui-express";
-import  swaggerDocument  from "./config/swagger";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./config/swagger";
 dotenv.config();
 
 const app: Express = express();
@@ -38,19 +38,20 @@ app.use(bodyParser.text({ type: "/" }));
 // };
 // app.use(cors(corsOptions));
 
-app.use(cors({
-  origin: "*", // Permet à toutes les origines d'accéder à l'API
-  credentials: true, // Permet les requêtes avec des credentials (cookies, données d'authentification, etc.)
-}));
+app.use(
+  cors({
+    origin: "*", // Permet à toutes les origines d'accéder à l'API
+    credentials: true, // Permet les requêtes avec des credentials (cookies, données d'authentification, etc.)
+  })
+);
 
 app.get("/api", (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server. /api-docs pour acceder à la documentation');
-  });
-  
-
+  res.send(
+    "Express + TypeScript Server. /api-docs pour acceder à la documentation"
+  );
+});
 
 // Utilisation des routes
-
 
 app.use("/api/user", userRoutes);
 app.use("/api/rank", rankRoutes);

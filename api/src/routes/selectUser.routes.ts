@@ -11,6 +11,7 @@ router.get(
   "/compare/:userId1/:userId2",
   selectUserController.compareSelectUser
 );
+router.get("/fetch/:userId", selectUserController.getSelectedUsers);
 /**
  * @swagger
  * /api/selectUser/{userId}/{userIdSelect}:

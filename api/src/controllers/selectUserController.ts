@@ -2,14 +2,62 @@ import { Request, Response } from "express";
 import prisma from "../config/prisma";
 import { updateRankings } from "./rankController";
 
+export const getSelectedUsers = async (req: Request, res: Response) => {
+  const { userId } = req.params; // l'ID de l'utilisateur qui a effectué les sélections
+
+  if (!userId || isNaN(parseInt(userId, 10))) {
+    return res.status(400).json({
+      error:
+        "L'identifiant de l'utilisateur est requis et doit être un nombre.",
+    });
+  }
+
+  try {
+    // Recherche de toutes les sélections faites par l'utilisateur
+    const selections = await prisma.selectionUtilisateur.findMany({
+      where: {
+        userId: parseInt(userId, 10),
+      },
+      include: {
+        commonPoint: true, // Inclut les détails des points communs sélectionnés si nécessaire
+      },
+    });
+
+    if (selections.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Aucun utilisateur sélectionné trouvé." });
+    }
+
+    // Optionnel: Transformer les résultats si nécessaire avant de les envoyer
+    const formattedSelections = selections.map((selection) => ({
+      selectedUserId: selection.userIdSelect,
+      commonPoints: selection.commonPoint.contenu,
+    }));
+
+    res.status(200).json(formattedSelections);
+  } catch (error: any) {
+    console.error(
+      "Erreur lors de la récupération des utilisateurs sélectionnés:",
+      error
+    );
+    res.status(500).json({ error: `Erreur du serveur: ${error.message}` });
+  }
+};
+
 export const createSelectionsForUser = async (req: Request, res: Response) => {
-  // Extraction des IDs depuis les paramètres de la requête
   const { userId, userIdSelect } = req.params;
   const { commonPointsIds } = req.body;
-  console.log(userId);
-  console.log(userIdSelect);
 
-  // Validation des commonPointsIds
+  const utilisateurIdInt = parseInt(userId, 10);
+  const utilisateurIdSelectInt = parseInt(userIdSelect, 10);
+
+  if (utilisateurIdInt === utilisateurIdSelectInt) {
+    return res
+      .status(400)
+      .json({ error: "Un utilisateur ne peut pas se sélectionner lui-même." });
+  }
+
   if (
     !Array.isArray(commonPointsIds) ||
     commonPointsIds.length === 0 ||
@@ -20,28 +68,24 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
     });
   }
 
-  // Conversion des userId et userIdSelect en entiers
-  const utilisateurIdInt = parseInt(userId, 10);
-  const utilisateurIdSelectInt = parseInt(userIdSelect, 10);
-
   try {
-    // Compte le nombre de sélections existantes pour cette paire d'utilisateurs
-    const existingSelections = await prisma.selectionUtilisateur.count({
+    const existingSelectionsCount = await prisma.selectionUtilisateur.count({
       where: {
         userId: utilisateurIdInt,
         userIdSelect: utilisateurIdSelectInt,
       },
     });
 
-    // Vérifie si l'ajout des nouveaux points communs respecte la limite de 3 sélections par utilisateur sélectionné
-    if (existingSelections + commonPointsIds.length > 3) {
+    if (existingSelectionsCount + commonPointsIds.length > 3) {
       return res.status(400).json({
         error:
           "Un utilisateur ne peut avoir que 3 points communs au maximum par utilisateur sélectionné.",
       });
     }
 
-    // Création des nouvelles sélections avec gestion des deux IDs
+    // Si aucune sélection précédente n'existe, préparer pour incrémenter le compteur après création des sélections
+    const isFirstTimeSelection = existingSelectionsCount === 0;
+
     const selections = await Promise.all(
       commonPointsIds.map((commonPointId) =>
         prisma.selectionUtilisateur.create({
@@ -54,16 +98,17 @@ export const createSelectionsForUser = async (req: Request, res: Response) => {
       )
     );
 
-    // Envoie les sélections créées en réponse
+    // Incrémenter le compteur uniquement si c'est la première sélection entre ces deux utilisateurs
+    if (isFirstTimeSelection) {
+      await prisma.user.update({
+        where: { id: utilisateurIdInt },
+        data: { count: { increment: 1 } },
+      });
+    }
+
     return res.status(200).json(selections);
   } catch (error) {
-    // Gestion des erreurs spécifiques à la base de données
-    if (
-      error instanceof Error &&
-      error.name === "PrismaClientKnownRequestError"
-    )
-      // Gestion des autres types d'erreurs
-      console.error(error);
+    console.error("Error creating selections:", error);
     return res.status(500).json({
       error: `Erreur du serveur: ${
         error instanceof Error ? error.message : error
@@ -136,6 +181,7 @@ export const compareSelectUser = async (req: Request, res: Response) => {
 const selectUserController = {
   createSelectionsForUser,
   compareSelectUser,
+  getSelectedUsers,
 };
 
 export { selectUserController };

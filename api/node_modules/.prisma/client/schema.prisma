@@ -18,6 +18,7 @@ model User {
   entreprise      String
   poste           String
   role            String                 @default("user")
+  count           Int
   score           Int                    @default(0)
   dateInscription DateTime               @default(now())
   qrCodeUrl       String                 @db.Text

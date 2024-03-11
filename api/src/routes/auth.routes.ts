@@ -6,6 +6,7 @@ const router = express.Router();
 // Routes d'authentification
 router.post("/login/qr", authController.loginWithQR);
 router.get("/qrcodes", authController.getQrCodes);
+router.delete("/deleteSession/:userId", authController.deleteSession);
 router.get("/details", authController.getUserDetails);
 router.get("/generate-pdf", authController.generatePdfWithQRCodes);
 

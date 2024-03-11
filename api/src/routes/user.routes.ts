@@ -7,7 +7,7 @@ router.get("/", UserController.readUsers);
 router.get("/:token", UserController.getUserByToken);
 router.post("/", UserController.createUser);
 router.post("/tab", UserController.createUsers);
-router.get("/:userId", UserController.fetchUser);
+router.get("/id/:userId", UserController.fetchUser);
 
 //swagger
 //read all users

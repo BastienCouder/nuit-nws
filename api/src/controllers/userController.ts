@@ -3,7 +3,6 @@ import QRCode from "qrcode";
 import prisma from "../config/prisma";
 import fs from "fs";
 import path from "path";
-import { toFileStream } from "qrcode";
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
 
@@ -39,16 +38,6 @@ export const createUser = async (req: Request, res: Response) => {
 
     // Générer un QR code à partir du jeton
     const qrCodeUrl: string = await QRCode.toDataURL(qrToken);
-
-    // Définir un chemin et nom de fichier pour le QR code
-    const qrImagesDir = path.join(__dirname, "..", "uploads", "qr_images");
-    if (!fs.existsSync(qrImagesDir)) {
-      fs.mkdirSync(qrImagesDir, { recursive: true });
-    }
-
-    const qrImagePath = path.join(qrImagesDir, `${email}_qrcode.png`);
-    await QRCode.toFile(qrImagePath, qrToken);
-
     // Créer un nouvel utilisateur avec le QR code URL et le chemin de fichier
     const user: User = await prisma.user.create({
       data: {
@@ -58,6 +47,7 @@ export const createUser = async (req: Request, res: Response) => {
         tel,
         entreprise,
         poste,
+        count: 0,
         qrCodeUrl,
         qrToken,
         lastLoginAt: new Date(),
@@ -106,7 +96,6 @@ export const fetchUser = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    // Respond with the user data if the user is found
     res.json(user);
   } catch (error) {
     console.error("Error fetching user:", error);
@@ -116,11 +105,14 @@ export const fetchUser = async (req: Request, res: Response) => {
   }
 };
 
-export const createUsers = async (req: Request, res: Response) => {
+export const createUsers = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const users = req.body;
 
-  const createdUsers = [];
-  const errors = [];
+  const createdUsers: Array<Object> = []; // To store successfully created users
+  const errors: Array<Object> = []; // To collect any errors
 
   for (const { nom, prenom, email, tel, entreprise, poste } of users) {
     try {
@@ -132,22 +124,18 @@ export const createUsers = async (req: Request, res: Response) => {
           email,
           error: "Un utilisateur avec cet email existe déjà.",
         });
-        continue;
+        continue; // Skip further processing and move to the next user
       }
 
+      // Generate QR token
       const qrToken = jwt.sign({ email }, process.env.JWT_SECRET_KEY!, {
         expiresIn: "365d",
       });
 
+      // Generate QR code URL
       const qrCodeUrl = await QRCode.toDataURL(qrToken);
 
-      const qrImagesDir = path.join(__dirname, "..", "uploads", "qr_images");
-      if (!fs.existsSync(qrImagesDir)) {
-        fs.mkdirSync(qrImagesDir, { recursive: true });
-      }
-      const qrImagePath = path.join(qrImagesDir, `${email}_qrcode.png`);
-      await QRCode.toFile(qrImagePath, qrToken);
-
+      // Create user
       const user = await prisma.user.create({
         data: {
           nom,
@@ -158,6 +146,7 @@ export const createUsers = async (req: Request, res: Response) => {
           poste,
           qrCodeUrl,
           qrToken,
+          count: 0,
           lastLoginAt: new Date(),
         },
       });
@@ -171,13 +160,13 @@ export const createUsers = async (req: Request, res: Response) => {
       );
       errors.push({
         email,
-        error: "Erreur lors de la création de l'utilisateur.",
+        error,
       });
     }
   }
 
+  // Handling response based on operation outcome
   if (errors.length > 0) {
-    // Si des erreurs se sont produites pendant la création des utilisateurs
     return res.status(400).json({
       message: "Certains utilisateurs n'ont pas pu être créés.",
       errors,
@@ -186,7 +175,7 @@ export const createUsers = async (req: Request, res: Response) => {
   }
 
   return res.status(201).json({
-    message: "Tous les utilisateurs ont été créés avec succès",
+    message: "Tous les utilisateurs ont été créés avec succès.",
     createdUsers,
   });
 };

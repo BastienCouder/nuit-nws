@@ -129,12 +129,8 @@ export const generatePdfWithQRCodes = async (req: Request, res: Response) => {
     let yPos = 50; // Position de départ en Y
     const qrCodeSize = 120; // Taille des QR codes (augmentée par rapport à 100)
     const spacing = 30; // Espace entre les QR codes et les textes
-    const lineSpacing = qrCodeSize + 40; // Espace vertical pour la nouvelle ligne
 
     users.forEach((user, index) => {
-      const nextXPos = xPos + qrCodeSize + spacing; // Calculer la prochaine position X
-
-      // Ajouter le nom et prénom sous l'image du QR code
       doc
         .fontSize(10)
         .text(`${user.prenom} ${user.nom}`, xPos, yPos + qrCodeSize + 10, {
@@ -152,21 +148,6 @@ export const generatePdfWithQRCodes = async (req: Request, res: Response) => {
           align: "center",
         }
       );
-
-      if (nextXPos + qrCodeSize > doc.page.width - 50) {
-        // Vérifier si on dépasse la largeur de la page
-        xPos = 50; // Réinitialiser la position X pour la nouvelle ligne
-        yPos += lineSpacing; // Décaler la position Y pour la nouvelle ligne
-      } else {
-        xPos = nextXPos; // Passer à la position X suivante sur la même ligne
-      }
-
-      // Vérifier si on atteint la fin de la page pour ajouter une nouvelle page et réinitialiser les positions
-      if (yPos > doc.page.height - 100) {
-        doc.addPage();
-        xPos = 50;
-        yPos = 50;
-      }
     });
 
     doc.end();
@@ -225,11 +206,46 @@ export const getUserDetails = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteSession = async (req: Request, res: Response) => {
+  const { userId } = req.params; // Ou req.body, selon votre conception API
+
+  // Assurez-vous que userId est fourni
+  if (!userId) {
+    return res.status(400).json({ error: "UserId is required" });
+  }
+
+  try {
+    // Suppression de toutes les sessions associées à l'userId
+    const deleteCount = await prisma.session.deleteMany({
+      where: {
+        userId: parseInt(userId),
+      },
+    });
+
+    // Vérifiez si des sessions ont été supprimées
+    if (deleteCount.count > 0) {
+      res.json({
+        message: `Sessions for user ${userId} deleted successfully.`,
+      });
+    } else {
+      res
+        .status(404)
+        .json({ message: "No sessions found for the specified user." });
+    }
+  } catch (error) {
+    console.error("Failed to delete session:", error);
+    res
+      .status(500)
+      .json({ error: "Internal server error while deleting session." });
+  }
+};
+
 const authController = {
   loginWithQR,
   getQrCodes,
   getUserDetails,
   generatePdfWithQRCodes,
+  deleteSession,
 };
 
 export { authController };
