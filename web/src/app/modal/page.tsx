@@ -30,6 +30,9 @@ export default function ModalScreen() {
           C&apos;est parti !
         </Link>
       </div>
+      <p className=" text-sm w-full text-foreground flex justify-center">
+        Réalisé par les étudiants de la nws
+      </p>
     </div>
   );
 }

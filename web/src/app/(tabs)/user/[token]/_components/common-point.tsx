@@ -2,6 +2,7 @@
 
 import { compareUserSelections } from "@/actions/compare-common-point";
 import { submitCommonPointsSelections } from "@/actions/create-common-point";
+import FullScreenLoader from "@/components/fullscreen-loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CommonPoint, User } from "@/types";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,8 @@ export default function CommonPoints({
   const router = useRouter();
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  console.log(commonPoints);
 
   const toggleSelection = (value: number) => {
     setSelectedValues((currentValues) => {
@@ -41,6 +44,8 @@ export default function CommonPoints({
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const res = await submitCommonPointsSelections(
         user.id,
@@ -58,12 +63,14 @@ export default function CommonPoints({
 
       console.error("Erreur lors de la soumission: ", error);
     } finally {
+      setIsLoading(false);
       router.push("/");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
+      {isLoading && <FullScreenLoader />}
       <button
         onClick={() => setIsVisible(!isVisible)}
         className="px-4 py-2 rounded-lg bg-secondary text-white font-medium mt-4 transition-colors"
@@ -94,7 +101,7 @@ export default function CommonPoints({
               </div>
             ))
           ) : (
-            <p className="text-center text-primary">
+            <p className="text-center text-background">
               Aucun point commun trouvé.
             </p>
           )}

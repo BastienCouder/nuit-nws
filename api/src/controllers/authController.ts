@@ -138,13 +138,12 @@ export const generatePdfWithQRCodes = async (req: Request, res: Response) => {
           align: "center",
         });
 
-      // Ajouter l'image du QR code
       doc.image(
         Buffer.from(user.qrCodeUrl.split(",")[1], "base64"),
         xPos,
         yPos,
         {
-          fit: [qrCodeSize, qrCodeSize], // Utiliser qrCodeSize pour les dimensions
+          fit: [qrCodeSize, qrCodeSize],
           align: "center",
         }
       );

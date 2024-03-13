@@ -1,38 +1,40 @@
-import { CommonPoint } from '@prisma/client';
-import prisma from '../config/prisma';
+import { CommonPoint } from "@prisma/client";
+import prisma from "../config/prisma";
 import { Request, Response } from "express";
 
-export const createCommonPoint = async (req: Request, res:Response) => {
+export const createCommonPoint = async (req: Request, res: Response) => {
   const { contenu } = req.body;
 
   if (!contenu) {
-    return res
-      .status(400)
-      .json({ message: "Le contenu est requis." });
+    return res.status(400).json({ message: "Le contenu est requis." });
   }
 
-  try { 
+  try {
     const newCommonPoint: CommonPoint = await prisma.commonPoint.create({
       data: { contenu },
     });
     res.status(201).json(newCommonPoint);
   } catch (error) {
     console.error("Erreur lors de la création du point commun :", error);
-    res.status(500).json({ message: "Erreur lors de la création du point commun." });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la création du point commun." });
   }
 };
 
-export const readCommonPoints = async (req: Request, res:Response) => {
+export const readCommonPoints = async (req: Request, res: Response) => {
   try {
     const commonPoints: CommonPoint[] = await prisma.commonPoint.findMany();
     res.status(200).json(commonPoints);
   } catch (error) {
     console.error("Erreur lors de la récupération des points communs :", error);
-    res.status(500).json({ message: "Erreur lors de la récupération des points communs." });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des points communs." });
   }
 };
 
-export const updateCommonPoint = async (req: Request, res:Response) => {
+export const updateCommonPoint = async (req: Request, res: Response) => {
   const { id, contenu } = req.body;
 
   if (!contenu) {
@@ -49,11 +51,13 @@ export const updateCommonPoint = async (req: Request, res:Response) => {
     res.status(200).json(updatedCommonPoint);
   } catch (error) {
     console.error("Erreur lors de la mise à jour du point commun :", error);
-    res.status(500).json({ message: "Erreur lors de la mise à jour du point commun." });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la mise à jour du point commun." });
   }
 };
 
-export const deleteCommonPoint = async (req: Request, res:Response) => {
+export const deleteCommonPoint = async (req: Request, res: Response) => {
   const { id } = req.body;
 
   try {
@@ -63,7 +67,9 @@ export const deleteCommonPoint = async (req: Request, res:Response) => {
     res.status(200).json({ message: "Point commun supprimé avec succès." });
   } catch (error) {
     console.error("Erreur lors de la suppression du point commun :", error);
-    res.status(500).json({ message: "Erreur lors de la suppression du point commun." });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la suppression du point commun." });
   }
 };
 
